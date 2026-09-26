@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مفكرة المفردات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #11111c;
+    --bg-soft: #17172a;
+    --card: #1d1d33;
+    --ink: #f3ede0;
+    --muted: #8d88a8;
+    --gold: #e8a33d;
+    --teal: #4fd1c5;
+    --danger: #e8615d;
+    --line: #2b2b46;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, #23233f 0%, var(--bg) 55%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Tajawal',sans-serif;
+    min-height:100vh;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+
+  /* header */
+  header{padding:6px 4px 4px;}
+  .title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  h1{font-size:1.5rem;margin:0;font-weight:900;letter-spacing:.2px;}
+  h1 span{color:var(--gold);}
+  .count-pill{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:6px 14px;font-weight:700;
+    font-size:.85rem;color:var(--gold);white-space:nowrap;
+  }
+  .sub{color:var(--muted);font-size:.85rem;margin-top:4px;}
+
+  .stats-panel{
+    margin-top:18px;background:var(--bg-soft);border:1px solid var(--line);
+    border-radius:var(--radius);padding:16px;
+  }
+  .stats-panel .stat-block{margin-top:0;}
+  .stats-panel .stat-block + .stat-block{
+    margin-top:16px;padding-top:16px;border-top:1px solid var(--line);
+  }
+  .stat-label{color:var(--muted);font-size:.72rem;margin-bottom:6px;}
+
+  /* distribution bar */
+  .dist{display:flex;gap:3px;height:8px;border-radius:6px;overflow:hidden;background:var(--bg-soft);direction:ltr;}
+  .dist i{display:block;height:100%;}
+  .dist-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:8px;font-size:.72rem;color:var(--muted);direction:ltr;justify-content:flex-start;}
+  .dist-legend b{display:inline-block;width:8px;height:8px;border-radius:2px;margin-inline-end:4px;vertical-align:middle;}
+
+  /* review progress bar */
+  .review-bar{height:8px;border-radius:6px;background:var(--bg-soft);overflow:hidden;direction:ltr;}
+  .review-bar i{display:block;height:100%;width:0%;background:var(--gold);transition:width .3s;}
+
+  /* footer toolbar */
+  .footer-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .tool-btn{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    border-radius:9px;padding:9px 14px;font-family:'Tajawal',sans-serif;
+    font-size:.78rem;cursor:pointer;
+  }
+  .tool-btn:hover{color:var(--gold);border-color:var(--gold);}
+  .tool-btn.danger:hover{color:var(--danger);border-color:var(--danger);}
+  .footer-note{margin-top:12px;color:var(--muted);font-size:.68rem;line-height:1.6;padding:0 6px;}
+
+  /* add bar */
+  .add-box{
+    display:flex;gap:8px;margin-top:20px;background:var(--card);
+    border:1px solid var(--line);border-radius:var(--radius);padding:8px;
+    transition:opacity .2s;
+  }
+  .add-box input{
+    flex:1;background:transparent;border:none;outline:none;
+    color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:1rem;
+    padding:8px 10px;direction:ltr;text-align:right;
+  }
+  .add-box input::placeholder{color:var(--muted);font-family:'Tajawal',sans-serif;}
+  .add-box button{
+    background:var(--gold);color:#1a1305;border:none;border-radius:10px;
+    padding:0 18px;font-family:'Tajawal',sans-serif;font-weight:700;font-size:.9rem;
+    cursor:pointer;transition:transform .15s, opacity .15s;
+  }
+  .add-box button:active{transform:scale(.95);}
+  .add-box button:disabled, .add-box input:disabled{opacity:.6;cursor:not-allowed;}
+
+  .msg{margin-top:10px;font-size:.85rem;min-height:1.2em;padding:0 4px;transition:color .2s;}
+  .msg.warn{color:var(--danger);}
+  .msg.ok{color:var(--teal);}
+  .msg.err{color:var(--danger);}
+  .inline-link{
+    background:none;border:none;color:var(--gold);text-decoration:underline;
+    font-family:'Tajawal',sans-serif;font-size:.8rem;cursor:pointer;padding:0;margin-inline-start:4px;
+  }
+  .manual-add-row{text-align:center;margin-top:8px;}
+
+  .shake{animation:shake .35s;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-6px);}
+    75%{transform:translateX(6px);}
+  }
+
+  /* lock banner */
+  .lock-banner{
+    margin-top:14px;background:rgba(232,97,93,.08);border:1px solid rgba(232,97,93,.4);
+    border-radius:var(--radius);padding:16px;text-align:center;
+  }
+  .lock-title{font-weight:800;font-size:.95rem;color:var(--danger);}
+  .lock-sub{font-size:.78rem;color:var(--muted);margin-top:4px;}
+  .lock-banner button{
+    margin-top:12px;background:var(--danger);color:#2a0d0c;border:none;border-radius:9px;
+    padding:10px 22px;font-family:'Tajawal',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;
+  }
+
+  /* section head */
+  .section-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:24px 2px 10px;
+  }
+  .section-head span{font-weight:800;font-size:.95rem;color:var(--ink);}
+  .link-btn{
+    background:none;border:none;color:var(--gold);font-size:.78rem;
+    font-family:'Tajawal',sans-serif;cursor:pointer;font-weight:700;padding:4px;
+  }
+
+  /* level badge */
+  .level-badge{
+    font-family:'JetBrains Mono',monospace;font-weight:800;font-size:.78rem;
+    padding:3px 9px;border-radius:7px;color:#0f0f18;display:inline-block;
+  }
+
+  /* card grid */
+  .card-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;
+  }
+  .card{width:100%;height:144px;perspective:900px;}
+  .card-inner{
+    position:relative;width:100%;height:100%;transition:transform .5s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;cursor:pointer;
+  }
+  .card.flipped .card-inner{transform:rotateY(180deg);}
+  .card-face{
+    position:absolute;inset:0;backface-visibility:hidden;overflow:hidden;
+    border-radius:11px;border:1px solid var(--line);background:var(--card);
+    padding:10px;display:flex;flex-direction:column;justify-content:flex-start;gap:6px;
+  }
+  .card-back{transform:rotateY(180deg);background:#221c33;justify-content:space-between;}
+  .word-en{
+    margin-top:14px;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;
+    direction:ltr;text-align:left;color:var(--ink);word-break:break-word;
+  }
+  .hint-en{
+    font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);
+    direction:ltr;text-align:left;line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .example-en{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+    direction:ltr;text-align:left;line-height:1.3;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .flip-hint{font-size:.63rem;color:var(--gold);text-align:left;direction:ltr;margin-top:auto;}
+  .meaning-ar{font-size:1rem;font-weight:700;color:var(--teal);margin-top:14px;}
+  .card-level-badge{
+    position:absolute;top:4px;right:4px;font-size:.6rem;padding:2px 6px;
+  }
+
+  .empty-state{
+    text-align:center;color:var(--muted);padding:50px 10px;font-size:.9rem;
+  }
+
+  footer{margin-top:30px;padding-top:20px;border-top:1px solid var(--line);text-align:center;}
+
+  /* quiz overlay */
+  .quiz-btn{
+    margin-top:14px;width:100%;background:var(--card);border:1px solid var(--gold);
+    color:var(--gold);border-radius:10px;padding:11px;font-family:'Tajawal',sans-serif;
+    font-weight:700;font-size:.85rem;cursor:pointer;
+  }
+  .quiz-overlay{
+    position:fixed;inset:0;background:rgba(10,10,18,.97);
+    z-index:50;display:none;flex-direction:column;align-items:center;
+    padding:34px 16px;gap:20px;
+  }
+  .quiz-top{width:100%;max-width:400px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.85rem;}
+  .quiz-top button{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+  .quiz-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:28px 20px;max-width:400px;width:100%;text-align:center;
+  }
+  .quiz-actions{display:flex;gap:10px;max-width:400px;width:100%;}
+  .quiz-actions button{
+    flex:1;padding:13px;border-radius:10px;border:none;font-family:'Tajawal',sans-serif;
+    font-weight:700;cursor:pointer;font-size:.92rem;
+  }
+  #quizReveal{background:var(--gold);color:#1a1305;width:100%;}
+  .quiz-correct{background:var(--teal);color:#0b1f1c;}
+  .quiz-wrong{background:var(--danger);color:#2a0d0c;}
+  .quiz-summary-title{font-size:1.3rem;font-weight:900;margin-bottom:10px;}
+  .quiz-summary-score{color:var(--gold);font-size:1.1rem;margin-bottom:16px;}
+
+  /* volume tabs */
+  .volume-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin-top:16px;}
+  .volume-tab{
+    flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--muted);
+    border-radius:999px;padding:7px 14px;font-family:'Tajawal',sans-serif;font-size:.78rem;
+    font-weight:700;cursor:pointer;white-space:nowrap;
+  }
+  .volume-tab.active{background:var(--gold);color:#1a1305;border-color:var(--gold);}
+  .volume-tab small{opacity:.75;font-weight:500;}
+
+  /* search box */
+  .search-box{
+    margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  }
+  .search-box input{
+    width:100%;background:transparent;border:none;outline:none;color:var(--ink);
+    font-family:'Tajawal',sans-serif;font-size:.85rem;padding:10px 12px;box-sizing:border-box;
+  }
+  .search-box input::placeholder{color:var(--muted);}
+
+  /* section links */
+  .section-links{display:flex;gap:12px;}
+
+  /* milestone banner (celebratory, dismissible - not a hard lock) */
+  .milestone-banner{
+    margin-top:14px;background:rgba(79,209,197,.08);border:1px solid rgba(79,209,197,.4);
+    border-radius:var(--radius);padding:16px;text-align:center;
+  }
+  .milestone-title{font-weight:800;font-size:.95rem;color:var(--teal);}
+  .milestone-sub{font-size:.78rem;color:var(--muted);margin-top:4px;}
+  .milestone-actions{display:flex;gap:10px;margin-top:12px;justify-content:center;}
+  .milestone-actions button{
+    border:none;border-radius:9px;padding:9px 18px;font-family:'Tajawal',sans-serif;
+    font-weight:700;font-size:.82rem;cursor:pointer;
+  }
+  .milestone-go{background:var(--teal);color:#0b1f1c;}
+  .milestone-later{background:none;border:1px solid var(--line);color:var(--muted);}
+
+  /* edit + delete icon group on cards (replaces the old standalone del-btn) */
+  .card-icons{position:absolute;top:4px;left:4px;display:flex;gap:2px;z-index:2;}
+  .card-icons button{
+    background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer;padding:3px 5px;line-height:1;
+  }
+  .card-icons button:hover{color:var(--gold);}
+  .card-icons .del-icon:hover{color:var(--danger);}
+  .edited-mark{position:absolute;bottom:4px;right:6px;font-size:.58rem;color:var(--gold);}
+
+  /* edit overlay */
+  .edit-overlay{
+    position:fixed;inset:0;background:rgba(10,10,18,.97);z-index:60;display:none;
+    flex-direction:column;align-items:center;padding:30px 16px;overflow-y:auto;
+  }
+  .edit-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;max-width:420px;width:100%;
+  }
+  .edit-title{font-weight:800;font-size:1rem;margin-bottom:16px;}
+  .edit-title span{color:var(--gold);font-family:'JetBrains Mono',monospace;direction:ltr;display:inline-block;}
+  .edit-field{margin-bottom:14px;}
+  .edit-field label{display:block;font-size:.72rem;color:var(--muted);margin-bottom:5px;}
+  .edit-field input, .edit-field textarea, .edit-field select{
+    width:100%;background:var(--bg-soft);border:1px solid var(--line);border-radius:8px;
+    color:var(--ink);font-family:'Tajawal',sans-serif;font-size:.85rem;padding:9px 10px;
+    box-sizing:border-box;resize:vertical;
+  }
+  .edit-field textarea{min-height:52px;}
+  .edit-actions{display:flex;gap:10px;margin-top:6px;}
+  .edit-actions button{
+    flex:1;padding:11px;border-radius:9px;border:none;font-family:'Tajawal',sans-serif;
+    font-weight:700;font-size:.85rem;cursor:pointer;
+  }
+  #editSave{background:var(--gold);color:#1a1305;}
+  #editCancel{background:none;border:1px solid var(--line);color:var(--muted);}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title-row">
+      <h1>📓 مفكرة <span>المفردات</span></h1>
+      <div class="count-pill" id="countPill">0 كلمة</div>
+    </div>
+    <div class="sub">اكتب كلمة إنجليزية، وشوف تلميحها قبل ما توصل للمعنى</div>
+
+    <div class="stats-panel">
+      <div class="stat-block">
+        <div class="stat-label" id="distLabel">توزيع المستويات (تقديري)</div>
+        <div class="dist" id="distBar"></div>
+        <div class="dist-legend" id="distLegend"></div>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-label" id="reviewLabel">0 / 20 قبل المراجعة الإجبارية</div>
+        <div class="review-bar"><i id="reviewFill"></i></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="add-box" id="addBox">
+    <input id="wordInput" type="text" placeholder="اكتب كلمة انكليزية..." autocomplete="off">
+    <button id="addBtn">أضف</button>
+  </div>
+  <div class="manual-add-row">
+    <button class="link-btn" id="manualAddBtn">✏️ أو أدخلها يدوياً بالكامل</button>
+  </div>
+  <div class="msg" id="msgBox"></div>
+
+  <div class="lock-banner" id="lockBanner" style="display:none;">
+    <div class="lock-title">🔒 وصلت 20 كلمة تحتاج مراجعة</div>
+    <div class="lock-sub">لازم تراجعهن قبل ما تكدر تضيف كلمات جديدة</div>
+    <button id="lockReviewBtn">ابدأ المراجعة الآن</button>
+  </div>
+
+  <div class="milestone-banner" id="milestoneBanner" style="display:none;">
+    <div class="milestone-title" id="milestoneTitle"></div>
+    <div class="milestone-sub" id="milestoneSub"></div>
+    <div class="milestone-actions">
+      <button class="milestone-go" id="milestoneGoBtn">ابدأ المراجعة</button>
+      <button class="milestone-later" id="milestoneLaterBtn">لاحقاً</button>
+    </div>
+  </div>
+
+  <div class="volume-tabs" id="volumeTabs"></div>
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="🔍 دور على كلمة بهذا المجلد...">
+  </div>
+
+  <div class="section-head">
+    <span id="volumeTitle">📖 المجلد 1</span>
+    <div class="section-links">
+      <button class="link-btn" id="quizVolumeBtn">مراجعة المجلد</button>
+      <button class="link-btn" id="quizAllBtn">مراجعة عامة</button>
+    </div>
+  </div>
+
+  <div class="card-grid" id="cardGrid"></div>
+
+  <footer>
+    <div class="footer-actions">
+      <button class="tool-btn" id="exportBtn">⬇️ تصدير نسخة</button>
+      <button class="tool-btn" id="importBtn">⬆️ استيراد نسخة</button>
+      <button class="tool-btn danger" id="clearBtn">🗑️ حذف الكل</button>
+    </div>
+    <input type="file" id="importInput" accept="application/json,.json" style="display:none;">
+    <div class="footer-note">
+      هذا ملف مستقل — نزّله وافتحه مباشرة بالمتصفح (Chrome) للحفظ التلقائي.
+      زر التصدير يسويلك نسخة ملف تكدر تحطها بجوجل درايف أو أي مكان تريده.
+    </div>
+  </footer>
+</div>
+
+<div class="quiz-overlay" id="quizOverlay"></div>
+
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-card">
+    <div class="edit-title"><span id="editModeLabel">تعديل الكلمة:</span> <span id="editWordTitle"></span></div>
+    <div class="edit-field" id="editWordField" style="display:none;">
+      <label>الكلمة (إنجليزي)</label>
+      <input id="editWordInput" type="text" style="direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;">
+    </div>
+    <div class="edit-field">
+      <label>التلميح (Hint) - اختياري</label>
+      <textarea id="editHint"></textarea>
+    </div>
+    <div class="edit-field">
+      <label>المعنى بالعربي</label>
+      <input id="editMeaning" type="text">
+    </div>
+    <div class="edit-field">
+      <label>جملة مثال - اختياري</label>
+      <textarea id="editExample"></textarea>
+    </div>
+    <div class="edit-field">
+      <label>المستوى</label>
+      <select id="editLevel">
+        <option value="A1">A1</option>
+        <option value="A2">A2</option>
+        <option value="B1">B1</option>
+        <option value="B2">B2</option>
+        <option value="C1">C1</option>
+        <option value="C2">C2</option>
+      </select>
+    </div>
+    <div class="edit-actions">
+      <button id="editCancel">إلغاء</button>
+      <button id="editSave">حفظ</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const LEVELS = ['A1','A2','B1','B2','C1','C2'];
+const LEVEL_COLORS = {
+  A1:'#4fd1c5', A2:'#6fd18f', B1:'#e8c53d',
+  B2:'#e8a33d', C1:'#e87d51', C2:'#c15fd1'
+};
+const REVIEW_THRESHOLD = 20;
+const VOLUME_SIZE = 100;
+
+let words = [];
+let quizState = null;
+let wordCounter = 0;
+let currentVolume = 1;
+let editingId = null;
+let manualAddMode = false;
+let pendingMilestone = null;
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str ?? '';
+  return d.innerHTML;
+}
+
+function boldWord(example, word){
+  const esc = escapeHtml(example);
+  if(!word) return esc;
+  const safe = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(' + safe + ')', 'ig');
+  return esc.replace(re, '<strong style="color:var(--gold)">$1</strong>');
+}
+
+function loadWords(){
+  try{
+    const raw = localStorage.getItem('vocab-words');
+    words = raw ? JSON.parse(raw) : [];
+  }catch(e){
+    words = [];
+  }
+  words.forEach(w=>{
+    if(w.reviewed === undefined) w.reviewed = false;
+    if(w.correctCount === undefined) w.correctCount = 0;
+    if(w.wrongCount === undefined) w.wrongCount = 0;
+    if(w.example === undefined) w.example = '';
+    if(w.edited === undefined) w.edited = false;
+    if(w.needsInfo === undefined) w.needsInfo = false;
+  });
+  loadCounter();
+  migrateVolumes();
+  render();
+}
+
+function loadCounter(){
+  try{
+    const raw = localStorage.getItem('vocab-counter');
+    wordCounter = raw ? parseInt(raw, 10) : 0;
+    if(isNaN(wordCounter)) wordCounter = 0;
+  }catch(e){
+    wordCounter = 0;
+  }
+}
+
+function saveCounter(){
+  try{
+    localStorage.setItem('vocab-counter', String(wordCounter));
+  }catch(e){
+    // non-fatal: volume numbering may reset next session, words themselves are unaffected
+  }
+}
+
+function migrateVolumes(){
+  const missing = words.filter(w => w.volume === undefined);
+  if(missing.length > 0){
+    const sorted = [...words].sort((a,b)=> new Date(a.date||0) - new Date(b.date||0));
+    let counter = 0;
+    for(const w of sorted){
+      counter++;
+      if(w.volume === undefined){
+        w.volume = Math.floor((counter-1)/VOLUME_SIZE) + 1;
+      }
+    }
+    wordCounter = Math.max(wordCounter, counter);
+    saveCounter();
+    saveWords();
+  }
+  currentVolume = Math.max(1, Math.ceil(wordCounter / VOLUME_SIZE) || 1);
+}
+
+function getMaxVolume(){
+  const fromCounter = Math.ceil(wordCounter / VOLUME_SIZE) || 1;
+  const fromWords = words.reduce((m,w)=>Math.max(m, w.volume||1), 1);
+  return Math.max(1, fromCounter, fromWords);
+}
+
+function saveWords(){
+  try{
+    localStorage.setItem('vocab-words', JSON.stringify(words));
+  }catch(e){
+    console.error('local save failed:', e);
+    showMessage('تعذر الحفظ بهذا المتصفح، صدّر نسخة احتياطية بزر التصدير', 'err');
+  }
+}
+
+function exportWords(){
+  if(words.length === 0){
+    showMessage('ماكو كلمات للتصدير بعد', 'warn');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(words, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const stamp = new Date().toISOString().slice(0,10);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vocab-words-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showMessage('تم تصدير نسخة احتياطية ✅ حطها بجوجل درايف أو أي مكان تريده', 'ok');
+}
+
+function importWords(file){
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    let imported;
+    try{
+      imported = JSON.parse(e.target.result);
+      if(!Array.isArray(imported)) throw new Error('bad format');
+    }catch(err){
+      showMessage('ملف غير صالح، تأكد انه نفس ملف التصدير', 'err');
+      return;
+    }
+    let added = 0, skipped = 0;
+    imported.forEach(item=>{
+      if(!item || !item.word) return;
+      if(isDuplicate(item.word)){ skipped++; return; }
+      wordCounter++;
+      words.unshift({
+        id: item.id || (Date.now() + '-' + Math.random().toString(36).slice(2,7)),
+        word: item.word,
+        hint: item.hint || '',
+        meaning_ar: item.meaning_ar || '',
+        example: item.example || '',
+        level: LEVELS.includes(item.level) ? item.level : 'B1',
+        volume: Math.floor((wordCounter-1)/VOLUME_SIZE) + 1,
+        edited: !!item.edited,
+        reviewed: !!item.reviewed,
+        correctCount: item.correctCount || 0,
+        wrongCount: item.wrongCount || 0,
+        date: item.date || new Date().toISOString()
+      });
+      added++;
+    });
+    saveWords();
+    saveCounter();
+    currentVolume = Math.max(1, Math.ceil(wordCounter / VOLUME_SIZE) || 1);
+    render();
+    showMessage(`تم استيراد ${added} كلمة${skipped ? ' (تجاوزت ' + skipped + ' مكررة)' : ''}`, 'ok');
+  };
+  reader.readAsText(file);
+}
+
+function isDuplicate(w){
+  const norm = w.trim().toLowerCase();
+  return words.some(x => x.word.toLowerCase() === norm);
+}
+
+function showMessage(text, type){
+  const box = document.getElementById('msgBox');
+  box.textContent = text;
+  box.className = 'msg ' + (type || '');
+}
+
+function setLoading(on){
+  document.getElementById('addBtn').disabled = on;
+  document.getElementById('wordInput').disabled = on;
+  document.getElementById('addBtn').textContent = on ? '...' : 'أضف';
+}
+
+const LEVEL_WORDS = {
+  A1: 'a able abler ablest about above accept accepted accepting accepts accord accorded according accords account accounted accounting accounts across act acted acting action actions activities activity acts actually add added adding address addressed addresses addressing adds affect affected affecting affects after again against age aged ageing ages aging ago agree agreed agreeing agrees ain air aired airing airs all allow allowed allowing allows almost along already also although always am among amount amounted amounts an and ands animal animals another answer answered answering answers any anything appear appeared appearing appears applied applies apply applying approach approached approaches approaching are area areas aren arm armed arming arms around arrive arrived arrives arriving art article articled articles articling arts as ask asked asking asks at ate attack attacked attacking attacks attempt attempted attempting attempts attention attentions available average averaged averages averaging away back backed backing backs bad baddest bank banked banking banks base based baser bases basest basing be bear bearing bearings bears became because become becomes becoming bed bedded bedding beddings beds been before began begin beginning beginnings begins begun behind bein being beings believe believed believes believing benefit benefited benefiting benefits benefitted benefitting between big bigger biggest bit bits bitted black blacked blacker blackest blacking blacks bodied bodies body bodying book booked booking bookings books borne both bought boy boys break breaking breaks bring bringing brings broke broken brought build building buildings builds built business businesses but buts buy buying buys by call called calling calls came campaign campaigned campaigning campaigns can canned canning cannot cans car care cared cares caring carried carries carry carrying cars case cased cases casing casings catch catches catching caught cause caused causes causing cell celled cells center centered centering centers centre centred centres centuries century certain certainly chance chanced chances chancing change changed changes changing character characters charge charged charges charging check checked checking checks child children choice choicer choices choicest choose chooses choosing chose chosen cities city claim claimed claiming claims class classed classes classing clear cleared clearer clearest clearing clears close closed closer closes closest closing color colored coloring colorings colors colour coloured colouring colours come comes cometh coming common commonest communities community companies company compare compared compares comparing complete completed completes completing computer computers concern concerned concerning concerns condition conditioned conditioning conditionings conditions consider considered considering considers contact contacted contacting contacts contain contained containing contains continue continued continues continuing control controlled controlling controls cos cost costing costs could coulda couldn countries country couple coupled couples coupling course coursed courses coursing court courted courting courts cover covered covering coverings covers create created creates creating culture cultured cultures culturing current currents customer customers cut cuts cutting cuttings d data date dated dates dating datum day days deal dealing deals dealt death deaths decide decided decides deciding decision decisions demand demanded demanding demands describe described describes describing design designed designing designs detail detailed detailing details develop developed developing development developments develops did didn die died dies difference differenced differences differencing different difficult discuss discussed discusses discussing do does doesn doin doing don done door doors down downed downing downs drank draw drawing drawings drawn draws drew drink drinking drinks drive driven drives driving drop dropped dropping drops drove due during dying each earlier earliest early easier easiest easy eat eaten eating eats economic economics economies economy education educations effect effected effecting effects effort efforts either else em employee employees end ended ending ends enjoy enjoyed enjoying enjoys enough especially establish established establishes establishing even evened evening evenings evens event events ever every everyone everything evidence evidenced evidences evidencing exactly example examples exist existed existing exists expect expected expecting expects experience experienced experiences experiencing explain explained explaining explains eye eyed eyeing eyes face faced faces facing fact factor factored factoring factorings factors facts fall fallen falling falls families family far farther farthest fast fasted faster fastest fasting fasts father fathered fathering fathers feature featured features featuring feel feeling feelings feels feet fell felt few fewer fewest field fielded fielding fields fight fighting fights figure figured figures figuring film filmed filming films final finally finals financial financials find finding findings finds fine fined finer fines finest fining finish finished finishes finishing fire fired fires firing firings firm firmed firmer firmest firming firms first firsts fit fits fitted fitter fittest fitting fittings focus focused focuses focusing focuss focussed focusses focussing follow followed following followings follows food foods foot footed footing foots for force forced forces forcing foreign forget forgets forgetting forgot forgotten form formed former formers forming forms forward forwarded forwarding forwards fought free freed freeing freer frees freest friend friends from front fronted fronting fronts full fuller fullest fund funded funding funds further furthered furthering furthers future futures game gamed games gaming gave general generals get gets gettin getting girl girls give given gives giving go goes goin going gone gonna good goodest got gotta gotten government governments great greater greatest greats grew ground grounded grounding grounds group grouped grouping groups grow growing grown grows growth growths guy guyed guying guys had hadn hafta half halved halves halving hand handed handing hands happen happened happening happenings happens happier happiest happy hard harder hardest has hasn have haven having he head headed heading headings heads health hear heard hearing hearings hears heart hearted hearts held help helped helping helpings helps her here hers high higher highest highs him himself his histories history hit hits hitting hold holding holdings holds home homed homes homing hope hoped hopes hoping hour hours house housed houses housing housings how however hows human humans i idea ideas if ifs im important improve improved improves improving in include included includes including increase increased increases increasing indeed individual individuals industries industry influence influenced influences influencing information ins inside insides instead interest interested interesting interests international internationals into involve involved involves involving is isn issue issued issues issuing it its itself job jobbing jobs join joined joining joins just keep keeping keeps kept key keyed keying keys kid kidded kidding kids kill killed killing killings kills kind kinder kindest kinds knew know knowing knowledge known knows lain land landed landing landings lands language languages large larger largest last lasted lasting lasts late later latest laugh laughed laughing laughs law laws lead leader leaders leading leads learn learned learning learns learnt least leave leaved leaves leaving leavings led lemme less let lets letter lettering letterings letters letting lettings level leveled leveling levelled levelling levels lie lied lies life light lighted lightest lighting lights like liked likelier likeliest likely likes liking limit limited limiting limits line lined lines lining list listed listen listened listening listens listing listings lists lit little littler littlest live lived lives living ll local locals long longed longer longest longing longs look looked looking looks lose loses losing lost lot lots love loved loves loving low lowed lower lowered lowering lowers lowest lowing lows lying m made main major majored majoring majors make makes making man manage managed management managements manager managers manages managing manned manning mans many market marketed marketing markets material materials matter mattered mattering matters may maybe me mean meaner meanest meaning meanings means meant measure measured measures measuring medium mediums meet meeting meetings meets member members men mention mentioned mentioning mentions met might mighta mightn mind minded minding minds minute minutes miss missed misses missing model modeled modeling modelled modelling models moment moments money moneys month months more morning mornings most mother mothered mothering mothers move moved moves moving much music must musta mustn my myself name named names naming national nationals nature natured natures near neared nearer nearest nearing nears necessaries necessary need needed needing needs never new newer newest news next nice nicer nicest night nights no not note noted notes nothing notice noticed notices noticing noting now number numbered numbering numberings numbers of off offed offer offered offering offerings offers office offices official officials offing offs often old older oldest olds on once one ones only open opened opening openings opens opinion opinioned opinions opportunities opportunity or order ordered ordering orders organisation organisations organization organizations other others our ours out outed outing outings outs outside outsides over overs own owned owning owns page paged pages paging paid paint painted painting paintings paints paper papered papering papers parent parented parenting parents park parked parking parks part parted particular particularly particulars partied parties parting parts party partying pass passed passes passing past patient patients pause paused pauses pausing pay paying pays people peopled peoples peopling per percent percents performance performances perhaps period periods person personal personals persons phone phoned phones phoning pick picked picking picks picture pictured pictures picturing piece pieced pieces piecing place placed places placing plan planned planning plans plant planted planting plantings plants play played playing plays please pleased pleases pleasing point pointed pointing points police policed polices policies policing policy political poor poorer poorest position positioned positioning positions possible power powered powering powers practice practiced practices practicing practise practised practises practising prepare prepared prepares preparing present presented presenting presents president presidents press pressed presses pressing pressings prettier pretties prettiest pretty prettying price priced prices pricing pricings private probably problem problems process processed processes processing produce produced produces producing product products program programed programing programme programmed programmes programming programs project projected projecting projects provide provided provides providing public publics put puts putted putting qualities quality question questioned questioning questionings questions quite raise raised raises raising raisings ran range ranged ranges ranging rate rated rates rather rating ratings re reach reached reaches reaching read reading readings reads real realer realise realised realises realising realize realized realizes realizing really reason reasoned reasoning reasons receive received receives receiving recent recently record recorded recording recordings records reduce reduced reduces reducing regard regarded regarding regards region regions relate related relates relating relationship relationships remain remained remaining remains remember remembered remembering remembers report reported reporting reports represent represented representing represents require required requires requiring research researched researches researching respect respected respecting respects response responses rest rested resting rests result resulted resulting results return returned returning returns right righted righter righting rights rise risen rises rising risk risked risking risks road roads role roles room roomed rooming rooms round rounded rounder roundest rounding rounds rule ruled rules ruling rulings run running runs s said sale sales same sat save saved saves saving savings saw say saying sayings says school schooled schooling schoolings schools sec second seconded seconding seconds section sectioned sectioning sections securities security see seeing seem seemed seeming seems seen sees sell selling sells send sending sends sense sensed senses sensing sent serve served serves service serviced services servicing serving servings set sets setting settings several share shared shares sharing she shop shopped shopping shops short shorted shorter shortest shorting shorts should shoulda shouldn show showed showing shown shows side sided sides siding sidings sign signed signing signs similar simple simpler simplest simply since single singled singles singling sit site sited sites sits sitting situation situations skill skilled skills small smaller smallest so social socials societies society sold some someone something sometimes son sons soon sooner soonest sort sorted sorting sorts sound sounded sounding sounds source sourced sources sourcing space spaced spaces spacing speak speaking speaks special specials spend spending spends spent spoke spoken sport sported sporting sports staff staffed staffing staffs stage staged stages staging stand standard standards standing stands start started starting starts state stated states stating stay stayed staying stays step stepped stepping steps still stilled stiller stillest stilling stills stock stocked stocking stocks stood stop stopped stopping stops store stored stores storey storied stories storing story storys street streets strong stronger strongest structure structured structures structuring student students studied studies study studying subject subjected subjecting subjects such suggest suggested suggesting suggests summer summered summers support supported supporting supports suppose supposed supposes supposing sure surer surest surprise surprised surprises surprising system systems t table tabled tables take taken takes taking talk talked talking talks taught teach teacher teachers teaches teaching teachings team teamed teaming teams technologies technology tell telling tells term termed terming terms test tested testing tests than thank thanked thanking thanks that their theirs them themselves then there therefore these they thing things think thinking thinks this those though thought thoughts through thus til time timed times timing to today together told too took top topped topping toppings tops total totaled totaling totalled totalling totals toward towards town towns trade traded trades trading train trained training trainings trains travel traveled traveling travelled travelling travels tried tries true trued truer trues truest truing try trying turn turned turning turns type typed types typing under understand understanding understandings understands understood until up upon upped upping ups us use used uses using usually value valued values valuing various ve very view viewed viewing views visit visited visiting visits voice voiced voices voicing vote voted votes voting wait waited waiting waits walk walked walking walks wanna want wanted wanting wants war warred warring wars was wasn watch watched watches watching water watered watering waters way ways we wear wearing wears week weeks well welled welling wells went were weren what whatever when where whether which while whiled whiles whiling white whiter whites whitest who whole wholes whom whose why wife will willed willing wills win winning winnings wins wish wished wishes wishing with within without wives woman women won wonder wondered wondering wonderings wonders word worded wording wordings words wore work worked worker workers working workings works world worlds worn worried worries worry worrying worse worst would wouldn write writes writing writings written wrong wronged wronging wrongs wrote y ye year years yes yeses yet you young younger youngest your yours',
+  A2: 'abilities ability absolutely abuse abused abuses abusing access accessed accesses accessing accident accidents achieve achieved achieves achieving active actives actor actors actual ad addition additional additions administration administrations admit admits admitted admitting adopt adopted adopting adopts ads adult adults advance advanced advances advancing advantage advantaged advantages advertise advertised advertises advertising advertize advertized advertizes advertizing advice advices afraid afternoon afternoons agencies agency agent agents agreement agreements ahead aid aided aiding aids aim aimed aiming aims alive alone alter altered altering alternative alternatives alters amaze amazed amazes amazing analyses analysis angrier angriest angry announce announced announces announcing annual annuals anyone anyway anyways apart apparently appeal appealed appealing appeals application applications appreciate appreciated appreciates appreciating appropriate appropriated appropriates appropriating argue argued argues arguing argument arguments arise arisen arises arising armies army arose arrange arranged arranges arranging artist artists aside asides asset assets associate associated associates associating assume assumed assumes assuming attend attended attending attends attitude attitudes attract attracted attracting attracts audience audiences author authored authoring authors avoid avoided avoiding avoids award awarded awarding awards aware babied babies baby babying background backgrounds bag bagged bagging bags balance balanced balances balancing ball balled balling balls ban band banded bands banned banning bans bar barred barring bars basic basics basis battle battled battles battling beach beached beaches beaching beat beaten beating beatings beats beautiful beer beers behavior behaviors behaviour behaviours below bet bets betted betting beyond bike biked bikes biking bill billed billing bills bind binding binds bird birded birding birds birth birthed birthing births blame blamed blames blaming blew block blocked blocking blocks blood blooded blooding bloods blow blowing blown blows blue blued bluer blues bluest bluing board boarded boarding boards boat boated boating boats bomb bombed bombing bombings bombs bond bonded bonding bonds bone boned bones boning bore bored bores boring boss bossed bosses bossing bottom bottomed bottoming bottoms box boxed boxes boxing brain brained braining brains brand branded branding brands brief briefed briefer briefest briefing briefings briefs broad broader broadest brother brothers brown browned browner brownest browning browns budget budgeted budgeting budgets burn burned burning burns burnt bus bused buses busied busier busies busiest busing busy busying cable cabled cables cabling calm calmed calmer calmest calming calms camera cameras camp camped camping camps cancer cancers capital capitals card carded carding cards career careered careering careers carefully cash cashed cashes cashing cast casted casting castings casts cat categories category cats cent central centrals cents chain chained chaining chains chair chaired chairing chairs challenge challenged challenges challenging chapter chapters chart charted charting charts cheap cheaper cheapest chief chiefs chip chipped chipping chips church churched churches churching circumstance circumstances civil clean cleaned cleaning cleanings cleans clearly climb climbed climbing climbs clock clocked clocking clocks clothes cloud clouded clouding clouds club clubbed clubbing clubs coach coached coaches coaching coast coasted coasting coasts coat coated coating coatings coats code coded codes coding coffee coffees cold colder coldest colds colleague colleagues collect collected collecting collection collections collects college colleges combine combined combines combining comfortable comment commented commenting comments commercial commercials commit commits committed committee committees committing communication communications competition competitions completely complex complexes concept concepts concert concerted concerts conclude concluded concludes concluding conclusion conclusions conduct conducted conducting conducts confirm confirmed confirming confirms conflict conflicted conflicting conflicts connect connected connecting connection connections connects connexion connexions consequence consequences consideration considerations construction constructions consumer consumers content contented contenting contents context contexts contract contracted contracting contracts contrast contrasted contrasting contrasts contribute contributed contributes contributing contribution contributions conversation conversations convince convinced convinces convincing cook cooked cooking cooks cool cooled coolest cooling cools cope coped copes copied copies coping copy copying core cored cores coring corner cornered cornering corners correct corrected correcting corrects count counted counting counts crack cracked cracking cracks crash crashed crashes crashing credit credited crediting credits crew crewed crewing crews cried cries crime crimes crises crisis critical crop cropped cropping crops cross crossed crosses crossing crossings crowd crowded crowding crowds cry crying cultural cup cupped cupping cups currently cycle cycled cycles cycling dad daddies daddy dads dailies daily damage damaged damages damaging dance danced dances dancing dark darker darkest daughter daughters dead deader deadest dear dearer dearest dears debate debated debates debating debt debts decade decades decline declined declines declining deep deeper deepest deeps defence defences defense defenses define defined defines defining degree degrees delay delayed delaying delays deliver delivered delivering delivers demonstrate demonstrated demonstrates demonstrating denied denies deny denying department departments depend depended depending depends desire desired desires desiring desk desks despite determine determined determines determining diet dieted dieting diets difficulties difficulty dinner dinners direct directed directing direction directions directly director directors directs disc discover discovered discovering discovers discs discussion discussions disease diseased diseases dish dished dishes dishing disk disks display displayed displaying displays distance distanced distances distancing district districts divide divided divides dividing doctor doctored doctoring doctors document documented documenting documents dog dogged dogging dogs dollar dollars double doubled doubles doubling doubt doubted doubting doubts dozen dozens draft drafted drafting drafts drama dramas draught draughts dream dreamed dreaming dreams dreamt dress dressed dresses dressing dried drier dries driest driver drivers drug drugged drugging drugs dry drying duties duty ear eared earn earned earning earnings earns ears earth earthed earths ease eased eases easily easing east edge edged edges edging effective egg egged egging eggs elect elected electing election elections elects element elements email emailed emailing emails emerge emerged emerges emerging employ employed employing employs emptied emptier empties emptiest empty emptying enable enabled enables enabling encourage encouraged encourages encouraging enemies enemy energies energy engage engaged engages engaging engineer engineered engineering engineers ensure ensured ensures ensuring enter entered entering enters entire entries entry environment environmental environments equal equaled equaling equalled equalling equals equipment equipments era eras error errors essential essentials estimate estimated estimates estimating eventually everybody examine examined examines examining excellent except excepted excepting excepts exchange exchanged exchanges exchanging excite excited excites exciting executive executives exercise exercised exercises exercising expand expanded expanding expands expensive experiment experimented experimenting experiments expert experts express expressed expresses expressing expression expressions extend extended extending extends extent extents extra extras extremely facilities facility fail failed failing failings fails failure failures fair faired fairer fairest fairing fairs faith faiths false falser falsest famous fan fanned fanning fans farm farmed farming farms fat fats fatter fattest fault faulted faulting faults favor favored favoring favorite favorites favors favour favoured favouring favourite favourites favours fear feared fearing fears fed federal federals fee feed feeding feedings feeds fees female females file filed files filing filings fill filled filling fillings fills finance financed finances financing financings fish fished fishes fishing fix fixed fixes fixing fixings flat flats flatted flatting flew flies flight flights floor floored flooring floorings floors flow flowed flower flowered flowering flowers flowing flown flows fly flying folk folks football footballs forth frame framed frames framing freedom freedoms fresh fresher freshest fruit fruited fruiting fruits fuel fueled fueling fuels fully fun function functioned functioning functions funnier funniest funny gain gained gaining gains gap gapped gapping gaps garden gardened gardening gardens gas gases gassed gasses gassing gate gated gates gather gathered gathering gatherings gathers gating gay gayer gayest gays gene generally generation generations genes gift gifted gifting gifts glad gladder gladdest glass glassed glasses glassing global goal goals gold grade graded grades grading grand grander grandest grant granted granting grants gray grayed grayer grayest graying grays green greened greener greenest greening greens grey greyed greyer greyest greying greys guard guarded guarding guards guess guessed guesses guessing guest guests guide guided guides guiding gun gunned gunning guns habit habited habits hair haired hairs hall halls handle handled handles handling hang hanged hanging hangings hangs hardly hat hate hated hates hating hats hatted healthier healthiest healthy heat heated heating heats heavier heavies heaviest heavy hell hells hence herself hi hid hidden hide hides hiding highly hill hilled hilling hills hire hired hires hiring hole holed holes holiday holidayed holidaying holidays holing honor honored honoring honors honour honoured honouring honours horse horsed horses horsing hospital hospitals host hosted hosting hosts hot hotel hotels hots hotter hottest huge huger hugest hung hunt hunted hunting hunts hurt hurting hurts husband husbanded husbanding husbands ice iced ices ideal ideals identified identifies identify identifying ill ills image imaged images imagine imagined imagines imaging imagining imaginings immediately implied implies imply implying importance impossible improvement improvements inch inched inches inching income incomes independent independents index indexed indexes indexing indicate indicated indicates indicating indices inform informed informing informs initial initialed initialing initialled initialling initials input inputs inputted inputting instance instanced instances instancing institution institutions insurance insurances intend intended intending intends interview interviewed interviewing interviews introduce introduced introduces introducing introduction introductions invest invested investigation investigations investing investment investments invests invite invited invites inviting island islanded islanding islands item items joint jointed jointing joints joke joked jokes joking judge judged judges judging jump jumped jumping jumps kick kicked kicking kicks king kings kiss kissed kisses kissing kitchen kitchens knock knocked knocking knocks label labeled labeling labelled labelling labels labor labored laboring labors labour laboured labouring labours lack lacked lacking lacks ladies lady laid lake lakes launch launched launches launching lay layer layered layering layers laying lays lean leaned leaner leanest leaning leanings leans leant left lefts leg legal legged legging leggings legs length lengths lesson lessons libraries library lift lifted lifting lifts link linked linking links load loaded loading loads loan loaned loaning loans location locations lock locked locking locks loss losses luck lucked luckier luckiest lucking lucks lucky lunch lunched lunches lunching machine machined machines machining magazine magazines mail mailed mailing mailings mails maintain maintained maintaining maintains majorities majority male males manufacture manufactured manufactures manufacturing map mapped mapping mappings maps mark marked marking markings marks marriage marriages married marries marry marrying mass massed masses massing match matched matches matching meal meals meat meats medical medicals memories memory message messaged messages messaging metal metals method methods mice middle middled middles middling mile miles militaries military milk milked milking milks mine mined mines mining minor minors mistake mistakes mistaking mistook mix mixed mixes mixing modern moderns monitor monitored monitoring monitors mood moods moral morals moreover mostly mountain mountains mouse mouses mouth mouthed mouthing mouths movement movements movie movies murder murdered murdering murders museum museums nation nations natural naturals nearly neck necked necking necks negative negatives neighbor neighbored neighboring neighbors neighbour neighboured neighbouring neighbours neither net nets netted netting network networked networking networks newspaper newspapers nobodies nobody noise noises none nor normal normals north novel novels nuclear nurse nursed nurses nursing object objected objecting objective objectives objects observe observed observes observing obvious obviously occur occurred occurring occurs odd odder oddest officer officered officering officers oil oiled oiling oils ok okay okayed okaying okays onto operate operated operates operating operation operations opposite opposites option options organise organised organises organising organize organized organizes organizing original originals otherwise ought oughta oughtn outta overall owe owed owes owing owner owners pack package packaged packages packaging packed packing packs pain pained paining pains pair paired pairing pairings pairs panel paneled paneling panelled panelling panels partner partnered partnering partners path paths pattern patterned patterning patterns payment payments peace peaces peak peaked peaking peaks peer peered peering peers percentage percentages perfect perfected perfecting perfects perform performed performing performs phase phased phases phasing photo photograph photographed photographing photographs photos physical physicals pilot piloted piloting pilots pitch pitched pitches pitching plain plainer plainest plains plane planed planes plate plated plates plating player players pleasure pleasured pleasures pleasuring plot plots plotted plotting plus pluses politics poll polled polling polls pool pooled pooling pools pop popped popping pops popular population populations port ported porting ports positive positives possibilities possibility possibly post posted posting postings posts potential potentials pound pounded pounding poundings pounds powerful prefer prefered prefering preferred preferring prefers presence presences pressure pressured pressures pressuring prevent prevented preventing prevents previous primaries primary prime primed primes priming principle principled principles print printed printing printings prints prior priors prize prized prizes procedure procedures proceed proceeded proceeding proceedings proceeds production productions professional professionals profit profited profiting profits progress progressed progresses progressing promise promised promises promising promote promoted promotes promoting proof proofed proofing proofs properties property proposal proposals propose proposed proposes proposing protect protected protecting protects proud prouder proudest prove proved proven proves proving pull pulled pulling pulls pupil pupils purchase purchased purchases purchasing purpose purposed purposes purposing push pushed pushes pushing quarter quartered quartering quarters quick quicker quickest quickly quiet quieted quieter quietest quieting quiets quote quoted quotes quoting race raced races racing radio radioed radios rain rained raining rains rang rank ranked ranking rankings ranks rare rarer rarest reaction reactions reader readers readied readier readies readiest ready readying realities reality recall recalled recalls recognise recognised recognises recognising recognize recognized recognizes recognizing recommend recommended recommending recommends red redder reddest reds refer refered reference referenced references referencing refering referred referring refers reflect reflected reflecting reflects reform reformed reforming reforms refuse refused refuses refusing regular regulars relation relations relative relatively relatives relax relaxed relaxes relaxing release released releases releasing relied relies religious rely relying remove removed removes removing rent rented renting rents repeat repeated repeating repeats replace replaced replaces replacing replied replies reply replying request requested requesting requests requirement requirements resource resourced resources resourcing respond responded responding responds responsibilities responsibility responsible restaurant restaurants reveal revealed revealing revealled revealling reveals revenue revenues review reviewed reviewing reviews rich richer richest ridden ride rides riding ring ringed ringing rings river rivers rock rocked rocking rocks rode roll rolled rolling rolls roof roofed roofing roofs root rooted rooting roots route routes row rowed rowing rows rung rural rush rushed rushes rushing sad sadder saddest safe safer safest safeties safety sample sampled samples sampling samplings sang satisfied satisfies satisfy satisfying scale scaled scales scaling scene scenes schedule scheduled schedules scheduling scheme schemed schemes scheming science sciences score scored scores scoring scorings screen screened screening screenings screens sea search searched searches searching seas season seasoned seasoning seasonings seasons seat seated seating seats secret secretaries secretary secrets sector sectors seed seeded seeding seeds seek seeking seeks select selected selecting selects self selves senior seniors sentence sentenced sentences sentencing separate separated separates separating series serious settle settled settles settling sex sexes shake shaken shakes shaking shall shape shaped shapes shaping sharp sharper sharpest sheet sheeted sheeting sheets shift shifted shifting shifts ship shipped shipping ships shirt shirted shirting shirts shock shocked shocking shocks shod shoe shoed shoes shook shoot shooting shootings shoots shot shots shout shouted shouting shouts shut shuts sick sicker sickest sight sighted sighting sightings sights significant sing singing sings sister sisters size sized sizes sizing skies skin skinned skinning skins sky sleep sleeping sleeps slept slid slide slides sliding slightly slip slipped slipping slips slow slowed slower slowest slowing slows smart smarted smarter smartest smarting smarts smell smelled smelling smells smile smiled smiles smiling smoke smoked smokes smoking snow snowed snowing snows soft softer softest software soil soiled soiling soils soldier soldiered soldiering soldiers solid solids solution solutions solve solved solves solving somebody somewhere song songs sorrier sorriest sorry sought soul souls south speaker speakers specific specifics sped speech speeches speed speeded speeding speeds spell spelled spelling spellings spells spelt spirit spirited spiriting spirits split splits splitting spot spots spotted spotting sprang spread spreading spreads spring springing springs sprung star starred starring stars statement statements station stationed stationing stations status steal stealing steals stick sticking sticks stole stolen stone stoned stones stoning storm stormed storming storms straight straighter straightest strange strangest strategies strategy strength strengths stress stressed stresses strike strikes striking struck struggle struggled struggles struggling stuck stuff stuffed stuffing stuffs style styled styles styling success successes successful suddenly suffer suffered suffering sufferred sufferring suffers suggestion suggestions suit suited suiting suits sum summed summing sums sun sung sunned sunning suns supplied supplies supply supplying surface surfaced surfaces surfacing surround surrounded surrounding surroundings surrounds survey surveyed surveying surveys survive survived survives surviving swam sweet sweeter sweetest sweets swim swimming swims swing swinging swings swum swung tall taller tallest tape taped tapes taping target targeted targeting targets task tasked tasking tasks taste tasted tastes tasting tastings tax taxed taxes taxi taxies taxiing taxing taxis tea tear tearing tears teas technique techniques teeth telephone telephoned telephones telephoning television televisions tend tended tending tends text texts the theater theaters theatre theatres theme themed themes theories theory thick thicker thickest thin thinned thinner thinnest thinning thins threat threats threw throughout throw throwing thrown throws ticket ticketed ticketing tickets tie tied ties tight tighter tightest till tilled tilling tills tinier tiniest tiny tip tipped tipping tips tire tired tires tiring title titled titles titling tomorrow tomorrows tone toned tones toning tool tooled tooling tools tooth toothed topic topics tore totally touch touched touches touching tough tougher toughest tour toured touring tours toy toyed toying toys trace traced traces tracing tracings track tracked tracking tracks tradition traditional traditions traffic traffick trafficked trafficking trafficks traffics transfer transfering transferred transferring transfers transport transported transporting transports treat treated treating treatment treatments treats tree trees trend trended trending trends trial trialed trialing trialled trialling trials trip tripped tripping trips troop troops trouble troubled troubles troubling truly trust trusted trusting trusts truth truths twice tying unclear unfortunately union unions unit units universities university unless upper uppers upset upsets upsetting urban urge urged urges urging urgings useful user users usual varied varies varieties variety vary varying vast vaster vastest version versioned versions via video videoed videos village villages visitor visitors volume volumes voter voters wage waged wages waging wake waked wakes waking wall walled walling walls warm warmed warmer warmest warming warms warn warned warning warnings warns wash washed washes washing waste wasted wastes wasting wave waved waves waving weak weaker weakest weapon weapons weather weathered weathering weathers wed wedded wedding weddings weds weekend weekending weekends weight weighted weighting weightings weights welcome welcomed welcomes welcoming west wet wets wetted wetter wettest wetting wheel wheeled wheeling wheels whereas wide wider widest wild wilder wildest wilds wind winded winding window windowed windowing windows winds wine wines wing winged winging wings wining winter wintered wintering winters wire wired wires wiring wirings woke woken wonderful wood wooded woods worth writer writers yard yards yeah yesterday yesterdays yield yielded yielding yields yourself yourselves youth youths zone zoned zones zoning zonings',
+  B1: 'abandon abandoned abandoning abandons abroad absence absences academic academics accommodation accommodations accompanied accompanies accompany accompanying accuse accused accuses accusing achievement achievements acknowledge acknowledged acknowledges acknowledging acquire acquired acquires acquiring acquisition acquisitions adapt adapted adapting adapts advertisement advertisements advertisment advertisments advise advised advises advising affair affairs afford afforded affording affords agenda agendas aircraft aircrafts alarm alarmed alarming alarms album albums allied allies ally analyse analysed analysing analyze analyzed analyzes analyzing ancient ancients anger angered angers angle angled angles angling anybody anywhere appearance appearances appoint appointed appointing appointment appointments appoints approve approved approves approving approximately arrangement arrangements arrest arrested arresting arrests arrival arrivals assess assessed assesses assessing assessment assessments assist assistance assistances assistant assistants assisted assisting assists association associations assumption assumptions assure assured assures assuring atmosphere atmospheres attach attached attaches attaching attractive aunt aunts awful bade badly basically bath baths beauties beauty bedroom bedrooms belief beliefs bell belled belling bells belong belonged belonging belongings belongs belt belted belting belts bend bended bending bends bent besides bias biased biases biasing bid bidding bids bin binned binning bins bite bites biting bitten bless blessed blesses blessing blessings blest blind blinded blinder blindest blinding blinds boom boomed booming booms boost boosted boosting boosts boot booted booting boots border bordered bordering borders borrow borrowed borrowing borrowings borrows bother bothered bothering bothers bottle bottled bottles bottling bowl bowled bowling bowls branch branched branches branching bread breaded breading breads breakfast breakfasted breakfasting breakfasts breast breasted breasting breasts breath breathe breathed breathes breathing breaths bred breed breeding breeds bridge bridged bridges bridging bright brighter brightest brush brushed brushes brushing brushings bunch bunched bunches bunching buried buries burst bursting bursts bury burying buyer buyers cake caked cakes caking calculate calculated calculates calculating cap capable capacities capacity capped capping caps capture captured captures capturing careful celebrate celebrated celebrates celebrating chairman chairmen channel channeled channeling channelled channelling channels characteristic characteristics charm charmed charming charms chase chased chases chasing chat chats chatted chatting cheek cheeked cheeks chemical chemicals chest chests childhood childhoods circle circled circles circling cite cited cites citing citizen citizens classic classics climate climates closely coal coals coin coined coining coins collapse collapsed collapses collapsing column columned columns combination combinations comfort comforted comforting comforts command commanded commanding commands commission commissioned commissioning commissions commitment commitments communicate communicated communicates communicating comparison comparisons compete competed competes competing competitive complain complained complaining complains complaint complaints complicate complicated complicates complicating component components concentrate concentrated concentrates concentrating concentration concentrations confidence confidences confuse confused confuses confusing conservative conservatives considerable consist consisted consistent consisting consists constant constants construct constructed constructing constructs contemporaries contemporary convention conventions corporate corporation corporations cough coughed coughing coughs council councils counties county coverage cow cowed cowing cows craft crafted crafting crafts crazier crazies craziest crazy cream creamed creaming creams creation creations criminal criminals criterion criterions critic criticism criticisms critics crucial curve curved curves curving damn damned damning damns danger dangerous dangers dare dared dares daring declare declared declares declaring decrease decreased decreases decreasing deeply defeat defeated defeating defeats defend defended defending defends definitely definition definitions delight delighted delighting delights deliveries delivery democracies democracy depth depths derive derived derives deriving description descriptions deserve deserved deserves deserving destroy destroyed destroying destroys device devices differ differed differing differs dig digging digs dirtied dirtier dirties dirtiest dirty dirtying disappear disappeared disappearing disappears disappoint disappointed disappointing disappoints discipline disciplined disciplines disciplining discount discounted discounting discounts dispute disputed disputes disputing distinguish distinguished distinguishes distinguishing distribute distributed distributes distributing division divisions domestic domestics drag dragged dragging drags dramatic dramatics dug dust dusted dusting dusts edit edited editing edition editions editor editors edits educate educated educates educating educational effectively efficient elderly electricity electronic electronics eliminate eliminated eliminates eliminating elsewhere emergencies emergency emotion emotional emotions emphases emphasis emphasise emphasised emphasises emphasising emphasize emphasized emphasizes emphasizing employer employers employment employments encounter encountered encountering encounters engine engines enhance enhanced enhances enhancing enormous enterprise enterprises enterprising entertainment entertainments entirely episode episodes equally equivalent equivalents escape escaped escapes escaping essay essayed essaying essays estate estates everywhere evil eviler evilest evils exact exacted exacting exacts exam examination examinations exams exception exceptions exclude excluded excludes excluding excuse excused excuses excusing exhibit exhibited exhibiting exhibition exhibitions exhibits existence existences expectation expectations expense expensed expenses expensing explanation explanations explore explored explores exploring export exported exporting exports expose exposed exposes exposing extreme extremes factories factory fade faded fades fading fairly familiar familiars fancied fancies fanciest fancy fancying farmer farmers fashion fashioned fashioning fashions fellow fellows fence fenced fences fencing fencings finger fingered fingering fingers flag flagged flagging flags flash flashed flashes flashing float floated floating floats flood flooded flooding floods fold folded folding folds fool fooled fooling fools forest forested foresting forests formal formals formula formulae formulas found founded founding founds framework frameworks freeze freezes freezing frequently friendlier friendliest friendly froze frozen fundamental fundamentals furthermore gaze gazed gazes gazing gear geared gearing gearings gears generate generated generates generating gentleman gentlemen giant giants god gods golf golfed golfing golfs governor governors grab grabbed grabbing grabs graduate graduated graduates graduating grain grained graining grains grass grassed grasses grassing grateful greet greeted greeting greetings greets grin grinned grinning grins guarantee guaranteed guaranteeing guarantees guaranties guaranty harm harmed harming harms hello helpful hero heroes highlight highlighted highlighting highlights hint hinted hinting hints historical honest hook hooked hooking hooks household households humor humored humoring humorings humors humour humoured humours hurried hurries hurry hurrying identities identity ignore ignored ignores ignoring illness illnesses illustrate illustrated illustrates illustrating immediate implement implemented implementing implements implication implications import imported importing imports impose imposed imposes imposing impression impressions incident incidents increasingly industrial industrials initiative initiatives injuries injury inner inners insist insisted insisting insists inspire inspired inspires inspiring install installed installing installs instruction instructions instrument instrumented instruments integrate integrated integrates integrating intellectual intellectuals intelligence intelligences intention intentions interaction interactions internal internals interpretation interpretations investigate investigated investigates investigating investor investors iron ironed ironing irons isolate isolated isolates isolating jail jailed jailing jails journalist journalists journey journeyed journeying journeys joy joys judgment judgments juries jury justice justices keen keened keener keenest keening keens knee kneed kneeing knees knife knifed knifes knifing knives landscape landscaped landscapes landscaping largely latter laughter lawyer lawyers lazier laziest lazy leadership leaderships leap leaped leaping leaps leapt legislation legislations lend lending lends lent liberal liberals licence licenced licences licencing license licensed licenses licensing lip lipped lips literature literatures locate located locates locating log logged logging logic logics logs loose loosed looser looses loosest loosing loud louder loudest lovelier loveliest lovely lover lovers mad madder maddest magic mainly maker makers manner mannered manners manufacturer manufacturers march marched marches marching massive master mastered mastering masters mate mated mates math mathematic mathematics maths mating maximum mayor mayors meanwhile mechanism mechanisms medicine medicines mental menu menus mere merely merest mess messed messes messing meter metered metering meters metre metres minima minimum minimums minister ministered ministering ministers minorities minority mission missions mobile mobiles mode modes mom mommies mommy moms moon mooned moons motion motioned motioning motions motor motored motoring motors mount mounted mounting mountings mounts multiple multiples musical musicals narrow narrowed narrower narrowest narrowing narrows native natives nearby necessarily negotiate negotiated negotiates negotiating negotiation negotiations neighborhood neighborhoods neighbourhood neighbourhoods nerve nerved nerves nerving nervous nevertheless newly normally northern nose nosed noses nosing notion notions noun nouns numerous observation observations occasion occasioned occasioning occasions occupied occupies occupy occupying ocean oceans online opera operas oppose opposed opposes opposing opposition oppositions ordinary origin originally origins ourselves outcome outcomes outline outlined outlines outlining output outputs outputted outputting pace paced paces pacing pale paled paler pales palest paling panic panicked panicking panics participant participants participate participated participates participating partly passage passages passenger passengers pen penned penning pens pension pensioned pensioning pensions perceive perceived perceives perceiving perfectly permanent permit permits permitted permitting personalities personality personally perspective perspectives persuade persuaded persuades persuading phenomena phenomenon phrase phrased phrases phrasing piano pianos pig pigged pigging pigs pile piled piles piling pink pinked pinker pinkest pinking pinks pipe piped pipes piping plastic plastics plenty pocket pocketed pocketing pockets poem poems poet poets politician politicians pose posed poses posing pot pots potted potting pour poured pouring pours practical pray prayed praying prays predict predicted predicting predicts premise premised premises premising preparation preparations presentation presentations preserve preserved preserves preserving presidential previously pride prided prides priding primarily principal principals priorities priority prison prisoner prisoners prisons pro producer producers prof professor professors profile profiled profiles profiling profilings proper properly proportion proportioned proportioning proportions pros prospect prospected prospecting prospects protection protections protein proteins protest protested protesting protests provision provisioned provisioning provisions pub publication publications pubs pump pumped pumping pumps pure purer purest pursue pursued pursues pursuing qualified qualifies qualify qualifying rail railed railing railings rails rapid rapidly rat ratio ratios rats ratted ratting raw rawer rawest react reacted reacting reacts rear reared rearing rears reasonable recognition recognitions recommendation recommendations recover recovered recovering recovers recruit recruited recruiting recruits reduction reductions regional regionals register registered registering registers regulation regulations reject rejected rejecting rejects relevant relief reliefs religion religions remark remarked remarking remarks remind reminded reminding reminds repair repaired repairing repairs reporter reporters representation representations representative representatives reputation reputations researcher researchers reserve reserved reserves reserving resident residents resolution resolutions resolve resolved resolves resolving respectively restore restored restores restoring restrict restricted restricting restricts retail retailed retailing retails retain retained retaining retains retire retired retirement retirements retires retiring revolution revolutions reward rewarded rewarding rewards rice rices rid ridded ridding rids rival rivaled rivaling rivalled rivalling rivals rough roughed rougher roughest roughing roughs royal royals ruin ruined ruining ruins sail sailed sailing sails sake sakes salaried salaries salary salt salted salting salts sand sanded sanding sands sank scan scanned scanning scans scare scared scares scaring scientific scientist scientists scope scoped scopes scoping seal sealed sealing sealings seals secondary secondly secure secured secures securing selection selections sensitive sequence sequenced sequences sequencing sequencings seriously session sessions settlement settlements severe severer severest sexual shade shaded shades shading sheep shelf shell shelled shells shelved shelves shelving shine shined shines shining shone shore shored shores shoring shoulder shouldered shoulders sigh sighed sighing sighs signal signaled signaling signalled signalling signals significantly silence silenced silences silencing sillier silliest silly silver silvered silvers sink sinking sinks sir ski skied skiing skirt skirted skirting skirts skis slave slaved slaves slaving slice sliced slices slicing slight slighted slighter slightest slighting slights slope slopes slowly snap snapped snapping snaps somehow somewhat southern spare spared sparer spares sparest sparing specialist specialists specifically spin spinning spins spun square squared squarer squares squarest squaring stable stabled stables stabling stain stained staining stains stair stairs stake staked stakes staking stamp stamped stamping stamps stare stared stares staring steel steeled steeling steels stem stemmed stemming stems stir stirred stirring stirrings stirs stretch stretched stretches stretching string stringing strings strip stripped stripping strips strongly strung studio studios submit submits submitted submitting substantial succeed succeeded succeeding succeeds sudden sufficient sugar sugared sugars suitable sunk supplier suppliers surely suspect suspected suspecting suspects swear swearing swears sweep sweeping sweepings sweeps swept switch switched switches switching swore sworn symptom symptoms tail tailed tailing tails tale talent talented talents tales tank tanked tanking tanks tap tapped tapping taps technical temperature temperatures temporary tennis tension tensioned tensioning tensions tent tented tenting tents terrible threaten threatened threatening threatens tonight tourist tourists tower towered towering towers trail trailed trailing trails trap trapped trapping trappings traps trick tricked tricking tricks truck trucked trucking trucks tube tubed tubes tubing tune tuned tunes tuning twin twins twist twisted twisting twists typical typically uglier ugliest ugly ultimately unable uncle uncles undertake undertaken undertakes undertaking undertakings undertook unemployment uniform uniformed uniforms unique unite united unites uniting unknown unknowns unlike unlikelier unlikeliest unlikely unusual update updated updates updating valuable valuables van vans variable variables variation variations vehicle vehicles verb verbs vice vices victim victims victories victory violence virtually virus viruses vision visions vital vitals volunteer volunteered volunteering volunteers web webbed webbing webbings webs weigh weighed weighing weighs weird weirder weirdest welfare welfares widely winner winners wipe wiped wipes wiping wise wised wiser wises wisest wising witness witnessed witnesses witnessing wound wounded wounding wounds wrap wrapped wrapping wrappings wraps yellow yellowed yellowing yellows',
+  B2: 'abortion abortions absolute absolutes abstract abstracted abstracting abstracts acceptable accomplish accomplished accomplishes accomplishing accurate adequate adjust adjusted adjusting adjustment adjustments adjusts admire admired admires admiring adventure adventured adventures adventuring adviser advisers advocate advocated advocates advocating aggressive agricultural airline airlines alcohol alcohols allege alleged alleges alongside alright altogether amendment amendments analyst analysts announcement announcements anticipate anticipated anticipates anticipating anxieties anxiety anxious anymore apartment apartments apologise apologised apologises apologising apologize apologized apologizes apologizing apparent approval approvals architecture architectures ashamed assign assigned assigning assigns athlete athletes attachment attachments attendance attendances attraction attractions attribute attributed attributes attributing automatically autumn autumns awareness barely barrier barriers behave behaved behaves behaving beneath beside biological bloodied bloodier bloodies bloodiest bloody bloodying boundaries boundary briefly brilliant broadcast broadcasted broadcasting broadcasts burden burdened burdening burdens button buttoned buttoning buttons cancel canceled canceling cancelled cancelling cancels capabilities capability carbon carbons carpet carpeted carpeting carpets castle castled castles castling catalog cataloged cataloging catalogs catalogue catalogued catalogues cataloguing celebration celebrations ceremonies ceremony chamber chambered chambering chambers champion championed championing champions championship championships characterise characterised characterises characterising characterize characterized characterizes characterizing charities charity cheese cheeses chicken chickened chickens chocolate chocolates cigarette cigarettes civilian civilians classical clause clauses clinical clothing cluster clustered clustering clusters comedies comedy compensation compensations competitor competitors complexities complexity compose composed composes composing composition compositions compound compounded compounding compounds comprehensive comprise comprised comprises comprising compromise compromised compromises compromising compute computed computes computing concrete concreted concretes concreting confident confidents confusion confusions consequently constantly constitute constituted constitutes constituting constraint constraints consult consultant consultants consulted consulting consults consume consumed consumes consuming contest contested contesting contests continuous controversial conventional convert converted converting converts cooperation correspond corresponded corresponding corresponds counsel counseled counseling counselled counselling counsels counter countered countering counters cousin cousins creative creature creatures criticise criticised criticises criticising criticize criticized criticizes criticizing curious curiouser currencies currency curtain curtained curtaining curtains custom customs darkness database databases dealer dealers dedicate dedicated dedicates dedicating deficit deficits democratic demonstration demonstrations densities density dependent dependents deposit deposited depositing deposits depress depressed depresses depressing depression depressions desert deserted deserting deserts designer designers destruction destructions detect detected detecting detects determination determinations devote devoted devotes devoting dialog dialoged dialoging dialogs dialogue dialogued dialogues dialoguing differently digital digitals dimension dimensioned dimensioning dimensions disagree disagreed disagreeing disagrees disaster disasters discoveries discovery dismiss dismissed dismisses dismissing disorder disordered disordering disorders distant distinct distinction distinctions disturb disturbed disturbing disturbs diversities diversity divorce divorced divorces divorcing dominate dominated dominates dominating dramatically eastern efficiencies efficiency electric electrics embarrass embarrassed embarrasses embarrassing embrace embraced embraces embracing empire empires entertain entertained entertaining entertains entitle entitled entitles entitling entrance entranced entrances entrancing envelope envelopes equation equations establishment establishments ethnic ethnics evaluate evaluated evaluates evaluating evaluation evaluations everyday evolution evolutions evolve evolved evolves evolving exceed exceeded exceeding exceeds excess excesses excitement excitements exhaust exhausted exhausting exhausts expansion expansions expenditure expenditures experimental experimentals exposure exposures extension extensions extensive external externals extract extracted extracting extracts extraordinary faithfully fantastic fascinate fascinated fascinates fascinating festival festivals fiction fictions filter filtered filtering filters firmly firstly flexible forecast forecasted forecasting forecasts forever format formation formations formats formatted formatting fortunate fortune fortunes foundation foundations fragment fragmented fragmenting fragments frequencies frequency frequent frequented frequenting frequents friendship friendships frighten frightened frightening frightens fulfil fulfiled fulfiling fulfill fulfilled fulfilling fulfills fulfils functional furniture galleries gallery gender gendered genders genetic gentle gentled gentler gentles gentlest gentling gently genuine gesture gestured gestures gesturing glance glanced glances glancing golden govern governed governing governs gradually grammar grammars grandmother grandmothers greatly guideline guidelines guiltier guiltiest guilty guitar guitars happiness harbor harbored harboring harbors harbour harbouring harbours heavily height heights hesitate hesitated hesitates hesitating historian historians historic holder holders hopefully horrible hunger hungered hungering hungers hypotheses hypothesis illegal illustration illustrations imagination imaginations immigrant immigrants implementation implementations impress impressed impresses impressing impressive incentive incentives incorporate incorporated incorporates incorporating independence independences indication indications infant infants infection infections inflation inflations initially injure injured injures injuring innocent innocents innovation innovations inquiries inquiry insight insights institutional insure insured insures insuring intense interior interiors interpret interpreted interpreting interprets intervention interventions invent invented inventing invents invitation invitations involvement involvements jacket jackets journal journaling journals justified justifies justify justifying laboratories laboratory league leagues leather leathered leathering leathers lecture lectured lectures lecturing liabilities liability limitation limitations liquid liquids listener listeners literally literary luxuries luxury maintenance maintenances margin margins mature matured matures maturing measurement measurements membership memberships mirror mirrored mirroring mirrors mixture mixtures moderate moderated moderates moderating modified modifies modify modifying module modules monthly mortgage mortgaged mortgages mortgaging motivate motivated motivates motivating motivation motivations muscle muscled muscles musician musicians mutual mysteries mystery narrative narratives naturally neglect neglected neglecting neglects nowadays nowhere obligation obligations occasionally offence offences offense offenses operator operators opponent opponents orange oranges organic organics overcame overcome overcomes overcoming oversea overseas ownership ownerships paragraph paragraphed paragraphing paragraphs parallel paralleled paralleling parallels participation participations partnership partnerships passion passions penalties penalty perception perceptions permission permissions personnel philosophies philosophy planet planets platform platforms pleasant pleasanter pleasantest poetries poetry pollution pollutions portion portioned portioning portions portrait portraits possess possessed possesses possessing possession possessions potato potatoes potentially poverty praise praised praises praising precise precisely preference preferences pregnancies pregnancy pregnant presumably pretend pretended pretending pretends printer printers privilege privileged privileges privileging probabilities probability profession professions promotion promotions prompt prompted prompting promptings prompts province provinces psychological publisher publishers qualification qualifications quantities quantity quietly racial racials radical radicals random rarely reasonably reckon reckoned reckoning reckons recoveries recovery reflection reflections refugee refugees regardless registration registrations regret regrets regretted regretting regularly regulate regulated regulates regulating reliable reliables remarkable remote remoter remotest rescue rescued rescues rescuing resign resigned resigning resigns resist resistance resistances resisted resisting resists resort resorted resorting resorts restriction restrictions reverse reversed reverses reversing revise revised revises revising romantic romantics roughly routine routines sanction sanctioned sanctioning sanctions satisfaction satisfactions scholar scholars scream screamed screaming screams segment segmented segmenting segments servant servants server servers shadow shadows shareholder shareholders shelter sheltered shelters shower showered showering showers significance significances silent similarly singer singers situate situated situates situating smooth smoothed smoother smoothest smoothing specialise specialised specialises specialising specialize specialized specializes specializing species specified specifies specify specifying sponsor sponsored sponsoring sponsors stabilities stability statistic statistics steadied steadier steadies steadiest steady steadying stimulate stimulated stimulates stimulating stomach stomached stomaching stomachs storage storages strain strained straining strains stranger strangers stream streamed streaming streams strengthen strengthened strengthening strengthens strict stricter strictest stroke stroked strokes stroking structural stupid stupider stupidest subsequent subsequently substance substances substitute substituted substitutes substituting successfully summaries summarise summarised summarises summarising summarize summarized summarizes summarizing summary supplement supplemented supplementing supplements supporter supporters surgeries surgery surprisingly survival survivals suspend suspended suspending suspends sustain sustained sustaining sustains symbol symbols tackle tackled tackles tackling teenager teenagers tendencies tendency tender tenders territories territory terrorist terrorists theoretical therapies therapy thirst thirsted thirsting thirsts throat throats tissue tissues tongue tongued tongues tonguing tourism tournament tournaments transform transformed transforming transforms transition transitioned transitioning transitions translate translated translates translating transportation transportations trigger triggered triggering triggers uncertainties uncertainty undergo undergoes undergoing undergone underlain underlie underlies underlying underwent universal universals universe universes valley valleys vegetable vegetables venture ventured ventures venturing versus vessel vessels veteran veterans violent visible visual visuals voluntary wander wandered wandering wanderings wanders weakness weaknesses wealth wealthier wealthiest wealthy weeklies weekly western westerns whenever wherever whilst whisper whispered whispering whisperings whispers withdraw withdrawing withdrawn withdraws withdrew wooden',
+  C1: 'abdominal abdominals absorb absorbed absorbing absorbings absorbs absorption absorptions accelerate accelerated accelerates accelerating acceleratings acceleration accelerations accent accented accenting accentings accents accumulate accumulated accumulates accumulating accumulatings accumulation accumulations accuracies accuracy accurately acid acidic acidics acids activate activated activates activating activatings actively acute acutest adaptation adaptations adaptive adaptives adjacent adjacents admission admissions adolescent adolescents adverse aeroplane aeroplanes aerosol aerosols aesthetic aesthetics affirm affirmed affirming affirmings affirms afterward afterwards aggregate aggregated aggregates aggregating aggregatings agriculture agricultures airplane airplanes algebra algebras algorithm algorithms alien aliens alliance alliances allocate allocated allocates allocating allocatings allocation allocations altitude altitudes aluminium aluminum amino amongst amplitude amplitudes analogies analogy ancestor ancestors anthropologies anthropology anti antibiotic antibiotics antibodies antibody antiquities antiquity antis appendices appendix appendixes applause apple apples approximate approximated approximates approximating approximatings approximation approximations arbitrary archaeologies archaeology architect architected architecting architectings architects array arrayed arraying arrayings arrays arrow arrowed arrowing arrowings arrows artefact artefacts articulate articulated articulates articulating articulatings artifact artifacts artificial artificials artistic artistics artwork artworks aspect aspects assemblies assembly assert asserted asserting assertings asserts assignment assignments athletic athletics atom atomic atomics atoms auction auctioned auctioning auctionings auctions audio audit audited auditing auditings audits authorities authority autonomies autonomy availabilities availability axiom axioms axis backward backwards bacteria bacterial bacterials bang banged banging bangings bangs bargain bargained bargaining bargainings bargains barrel barreled barreling barrelings barrelled barrelling barrellings barrels basin basined basins bat bats batted batting battings beam beamed beaming beamings beams behavioral behavioural bilingual bilinguals binaries binary binarys biodiversity biologies biologist biologists biology bizarre blank blanked blanker blanking blanks bled bleed bleedin bleeding bleeds bodily bonus bonuses bound bounded bounding boundings bounds bracket bracketed brackets bracketted breakdown breakdowns broadly bubble bubbled bubbles bubbling bubblings bucket buckets bulk bulked bulking bulkings bulks bullet bullets bundle bundled bundles bundling bundlings calcium calculation calculations calculator calculators calculus campus campuses candidate candidates capillaries capillary capitalism capitalisms capitalist capitalists carrier carriers cattle censor censored censoring censorings censors characterisation characterisations characterization characterizations cheat cheated cheating cheatings cheats cheer cheered cheering cheerings cheers chemistries chemistry chemotherapies chemotherapy chess chloride chlorides chromosome chromosomes chronic chronics chunk chunked chunking chunkings chunks cinema cinemas circa circulate circulated circulates circulating circulatings circulation circulations civilisation civilisations civilization civilizations clarified clarifies clarify clarifying clarifyings classification classifications classified classifies classify classifying classifyings classroom classrooms clay clays clever cleverer cleverest click clicked clicking clickings clicks client clients clinic clinics clip clipped clipping clippings clips clone cloned clones cloning clonings closure closures clue clued clues cluing cluings coefficient coefficients cognitive coherent collective collectives colonial colonials colonies colony comma commas commentaries commentary commodities commodity commonly communicative communist communists compact compacted compacter compacting compacts comparable comparables comparative comparatives compensate compensated compensates compensating compensatings competence competences competent complement complemented complementing complementings complements complication complications complied complies comply complying complyings composer composers composite comprehension computation computations conceive conceived conceives conceiving conceivings conception conceptions conceptual conceptuals conditional conditionals conduction cone cones conference conferences configuration configurations confine confined confines confining confinings confound confounded confounding confoundings confounds congruent connector connectors connotation connotations conscious consciousness consciousnesses consensus consent consented consenting consentings consents conservation conservations conserve conserved conserves conserving conservings consonant consonants constitution constitutions constrain constrained constraining constrainings constrains consultation consultations consumption consumptions container containers continent continents continuities continuity contour contoured contouring contourings contours contradict contradicted contradicting contradictings contradiction contradictions contradictory contradicts contraries contrary controversies controversy converge converged convergence convergences converges converging convergings coordinate coordinated coordinates coordinating coordinatings coordination coordinations cord corded cording cordings cords coronary corpus correction corrections correctly correlate correlated correlates correlating correlatings correlation correlations correspondence correspondences corruption corruptions cortex cortexes cortices credibility criteria critically critique critiqued critiques critiquing critiquings crude cruder crudest crystal crystals cue cued cueing cueings cues cure cured cures curing curings curricula curriculum curriculums cyclic cyclics cylinder cylinders damp damped dampest damping dampings damps deadline deadlines decay decayed decaying decayings decays deceive deceived deceives deceiving deceivings defect defected defecting defectings defects deficiencies deficiency definite deflection deflections degrade degraded degrades degrading degradings deliberately delta deltas demonstrator demonstrators denominator denominators denote denoted denotes denoting denotings dense denser densest dependence dependences depict depicted depicting depictings depicts derivative derivatives descendent descendents descriptor descriptors destination destinations detection detections developmental developmentals deviation deviations diagnose diagnosed diagnoses diagnosing diagnosings diagnosis diagnostic diagnostics diagram diagrammed diagramming diagrammings diagrams dialect dialects diameter diameters diaries diary dictate dictated dictates dictating dictatings dictionaries dictionary differential differentials differentiate differentiated differentiates differentiating differentiatings differentiation differentiations diffusion diffusions dilemma dilemmas dilute diluted dilutes diluting dilutings dimensional dimensionals dioxide dioxides directive directives disabilities disability disadvantage disadvantaged disadvantages disadvantaging disadvantagings discharge discharged discharges discharging dischargings discourse discoursed discourses discoursing discoursings discrete discrimination discriminations displacement displacements dissection dissections dissertation dissertations dissolve dissolved dissolves dissolving dissolvings distribution distributions disturbance disturbances diverse domain domains dominance dominances dominant domination dominations donor donors dose dosed doses dosing dosings drain drained draining drainings drains drift drifted driftin drifting drifts duration durations dye dyed dyeing dyeings dyes dynamic dynamics ecological ecologicals ecologies ecology economically economist economists effectiveness elaborate elaborated elaborates elaborating elaboratings elastic elasticities elasticity elastics electron electrons elementary elevate elevated elevates elevating elevatings elevation elevations elimination eliminations elite elites embed embedded embedding embeddings embeds emergence emergences emission emissions emit emits emitted emitting emittings emperor emperors empirical empiricals encode encoded encodes encoding encodings enforcement enforcements enormously entities entity entrant entrants enzyme enzymes epidemic epidemics epidemiologies epidemiology equalities equality equilibrium equivalence equivalences erase erased erases erasing erasings essence essences essentially esthetic esthetics estimation estimations ethic ethical ethicals ethics evident evidents evolutionary ex execute executed executes executing executings execution executions exes exit exited exiting exitings exits expertise expertises explicit explicitly exploit exploited exploiting exploitings exploits exponential exponentials fabric fabrics facet faceted faceting facetings facets facilitate facilitated facilitates facilitating facilitatings factorial factorials faculties faculty fatigue fatigued fatigues fatiguing fatiguings feedback feedbacks fertility fetal fever fevered fevers fiber fibers fibre fibres fin finite finned finning finnings fins flesh fleshed fleshes fleshing fleshings flexibilities flexibility flip flipped flipping flippings flips fluid fluids flux fluxed fluxes fluxing fluxings foetal footnote footnoted footnotes footnoting footnotings fora formally formulation formulations forum forums fossil fossils founded founding foundings founds fraction fractions fracture fractured fractures fracturing fracturings freely friction frictions fringe fringed fringes fringing fringings fundamentally fungi fungus fusion fusions gage gaged gages gaging gagings gauge gauged gauges gauging gaugings generalisation generalisations generalise generalised generalises generalising generalisings generalization generalizations generalize generalized generalizes generalizing genetically genetics ghost ghosted ghosting ghostings ghosts globalisation globalisations globalization globalizations goat goats goodness goods gradient gradients gram grammatical grammaticals grams graph graphed graphing graphings graphs grasp grasped grasping graspings grasps gravities gravity grid grids gross grossed grosser grosses grossest grossing gut guts gutted gutting guttings habitat habitats halfway halfways handout handouts harvest harvested harvesting harvestings harvests hawk hawked hawking hawkings hawks headquarter headquartered headquartering headquarterings headquarters hedge hedged hedges hedging hedgings helices helix helixes hepatitis herbicide herbicides hierarchies hierarchy hip hipped hips historically homework homeworks horizon horizons horizontal horizontals hormone hormones hydrogen hydrogens identical identicals identification identifications ideologies ideology illusion illusions immune impact impacted impacting impactings impacts implicit importantly impulse impulses incidence incidences incline inclined inclines inclining inclinings inclusion inclusions incredible incredibles incredibly incumbent incumbents independently indicator indicators indifference indifferences indigenous indirect indirects individually induce induced induces inducing inducings induction inductions industrialisation industrialisations industrialise industrialised industrialises industrialising industrialisings industrialization industrializations industrialize industrialized industrializes industrializing inequalities inequality inevitably infect infected infecting infectings infectious infects inference inferences inferior inferiors infinite infinities infinity infinitys influential influentials informal informals inhibit inhibited inhibiting inhibitings inhibition inhibitions inhibits initiate initiated initiates initiating initiatings initiation initiations inject injected injecting injectings injection injections injects innate insect insects insert inserted inserting insertings inserts instabilities instability instinct instincts integral integrals integration integrations intensities intensity intensive interact interacted interacting interactings interacts interestingly interface interfaced interfaces interfacing interfacings interfere interfered interferes interfering interferings intermediate intermediated intermediates intermediating intermediatings interrupt interrupted interrupting interruptings interrupts interval intervals intervene intervened intervenes intervening intervenings interviewer interviewers invade invaded invades invading invadings invasion invasions inversion inversions invert inverted inverting invertings inverts ion ions irrelevant irrigation irrigations jazz jazzed jazzes jazzing jazzings junior juniors justification justifications kidney kidneys kilometer kilometers kilometre kilometres lab labs lateral laterals layout layouts leaf leafed leafing leafings leafs lecturer lecturers legend legends legitimate legitimated legitimates legitimating legitimatings leisure leisures lever levered levering leverings levers lexical lexicals liable liables lifestyle lifestyles lifetime lifetimes likelihood likelihoods likewise limb limbed limbs linear linears linguistic linguistics liter liters litre litres liver livers locally loci locus locuses logical logicals longitudinal longitudinals loop looped looping loopings loops lump lumped lumping lumpings lumps lung lungs machineries machinery magnetic magnetics magnitude magnitudes mall malls manipulate manipulated manipulates manipulating manipulatings manipulation manipulations manual manuals manuscript manuscripts marble marbled marbles marginal marginals marker markers marrow marrows maternal maternals mathematical mathematicals matrices matrix matrixes maximise maximised maximises maximising maximisings maximize maximized maximizes maximizing meaningful mechanic mechanical mechanicals mechanics media mediate mediated mediates mediating mediatings membrane membranes memorise memorised memorises memorising memorisings memorize memorized memorizes memorizing mentor mentored mentoring mentorings mentors mercury merge merged merges merging mergings messenger messengers metabolism metabolisms metaphor metaphors methodologies methodology micro mid migrate migrated migrates migrating migratings migration migrations millimeter millimeters millimetre millimetres mineral minerals minimal minimals minimise minimised minimises minimising minimisings minimize minimized minimizes minimizing minus minuses missile missiles mobilities mobility modification modifications mole molecular moleculars molecule molecules moles momenta momentum momentums monetary monkey monkeyed monkeying monkeyings monkeys monopolies monopoly moralities morality morphological morphologicals morphologies morphology mortalities mortality motif motifs motive motives multi multinational multinationals multiplied multiplies multiply multiplying multiplyings mutation mutations myth myths naked namely nastier nastiest nasty nationalism nationalisms neat neater neatest necessities necessity neo nest nested nesting nestings nests neural neurals neuron neurone neurones neurons neutral neutrals nicely niche niches nitrogen nitrogens noble nobler nobles noblest node nodes noisier noisiest noisy nominal nominals non nonetheless nonlinear nonlinears norm norms notation notations novice novices nuclei nucleus null nulled nulling nullings nulls numerical numericals nutrient nutrients objection objections obscure obscured obscures obscuring obscurings observer observers obtain obtained obtaining obtainings obtains occupation occupations occurrence occurrences offspring offsprings onset onsets onwards optical opticals optimal optimals optimum oral orals organ organism organisms organs orient orientation orientations oriented orienting orientings orients oscillation oscillations outer outers outlet outlets overhead overheads overlap overlapped overlapping overlappings overlaps overview overviewed overviewing overviewings overviews oxidise oxidised oxidises oxidising oxidisings oxidize oxidized oxidizes oxidizing oxidizings oxygen oxygens painful par paradigm paradigms paradox paradoxes parameter parameters parcel parceled parceling parcelings parcelled parcelling parcellings parcels pardon pardoned pardoning pardonings pardons parental parentals parentheses parenthesis parred parring parrings pars partial partially partials particle particles partition partitioned partitioning partitionings partitions pathway pathways peasant peasants periodic periodics peripheral peripherals pest pesticide pesticides pests phenomenal phenomenals philosopher philosophers philosophical philosophicals phonological phonologicals phosphate phosphates photographic photographics physically physician physicians physics physiological physiologicals pi planner planners plantation plantations plausible plausibles plug plugged plugging pluggings plugs plural plurals polar polars pole poled poles poling polings politically portfolio portfolios portray portrayal portrayals portrayed portraying portrayings portrays positively poster posters postgraduate postgraduates potassium powder powdered powdering powderings powders practitioner practitioners pragmatic pragmatics pre precede preceded precedes preceding precedings precipitate precipitated precipitates precipitating precipitatings precipitation precipitations predator predators prediction predictions predominantly prejudice prejudiced prejudices prejudicing prejudicings preliminaries preliminary presume presumed presumes presuming presumings prevalence prevalences prey preyed preying preyings preys primer primers primitive primitives probe probed probes probing probings problematic problematics processor processors productive productivities productivity profound profounder profoundest progression progressions progressive projection projections prominent pronounce pronounced pronounces pronouncing pronouncings proposition propositioned propositioning propositionings propositions protocol protocols proton protons psychiatric psychiatrics psychologies psychologist psychologists psychology publish published publishes publishing publishings pulse pulsed pulses pulsing pulsings punch punched punches punching punchings punish punished punishes punishing punishings punishment punishments purely puzzle puzzled puzzles puzzling puzzlings qualitative quantitative quantum questionnaire questionnaires quiz quizs quizzed quizzes quizzing quizzings quotation quotations rack racked racking rackings racks radar radars radiation radiations radii radius rainfall rainfalls randomise randomised randomises randomising randomisings randomize randomized randomizes randomizing randomly rational rationalities rationality rationals ray rayed raying rayings rays reactive reactor reactors readily realism realisms realistic realistics realm realms receptor receptors recipe recipes reconstruct reconstructed reconstructing reconstructings reconstructs regime regimes regression regressions rehabilitation rehabilitations reinforce reinforced reinforces reinforcing reinforcings rejection rejections reliabilities reliability render rendered rendering renderings renders repertoire repertoires replacement replacements replicate replicated replicates replicating replicatings replication replications reproduce reproduced reproduces reproducing reproducings reproduction reproductions republic republics resemble resembled resembles resembling resemblings reservoir reservoirs residual residuals residue residues resistant respiratory retrieve retrieved retrieves retrieving retrievings revolutionaries revolutionary rewrit rewrite rewrited rewrites rewriting rewritten rewrote rhetoric rhetorics rhythm rhythms ridiculous ritual rituals robot robots rope roped ropes roping ropings rotate rotated rotates rotating rotatings rotation rotations rub rubbed rubbing rubbings rubs ruler rulers scatter scattered scattering scatterings scatters scenario scenarios scholarship scholarships scripture scriptures scroll scrolled scrolling scrollings scrolls secrete secreted secretes secreting secretings sediment sedimented sedimenting sedimentings sediments selective semantic semantics semester semesters semi seminar seminars sensation sensations sensible sensibles sensitivities sensitivity sensory separately separation separations sexualities sexuality shallow shallowed shallower shallowest shallowing shallows shortly shuttle shuttled shuttles shuttling shuttlings similarities similarity simplified simplifies simplify simplifying simplifyings simulate simulated simulates simulating simulatings simulation simulations simultaneously sin singular singulars sinned sinning sinnings sins sketch sketched sketches sketching sketchings skip skipped skipping skippings skips slab slabed slabing slabings slabs slash slashed slashes slashing slashings slavery slot slots slotted slotting slottings snake snaked snakes snaking snakings sneeze sneezed sneezes sneezing sneezings sniff sniffed sniffing sniffings sniffs socialise socialised socialises socialising socialisings socialize socialized socializes socializing socially sodium sodiums solar solars soluble solubles solute solutes solvent solvents sometime sophisticate sophisticated sophisticates sophisticating span spanned spanning spannings spans spatial spatials specialities speciality specialties specialty specification specifications specimen specimens spectra spectrum spectrums sperm sperms sphere spheres splice spliced splices splicing splicings sponsorship sponsorships spontaneous spray sprayed spraying sprayings sprays stabilise stabilised stabilises stabilising stabilisings stabilize stabilized stabilizes stabilizing stabilizings stack stacked stacking stackings stacks stadium stadiums stance stanced stances stancing stancings standardise standardised standardises standardising standardisings standardize standardized standardizes standardizing static statics statistical statistically statisticals statistics stereotype stereotyped stereotypes stereotyping stereotypings stimuli stimulus straightforward strand stranded stranding strandings strands strategic strictly stripe striped stripes striping stripings sub subbed subbing subbings subjective subs subset subsets substitution substitutions substrate substrates subtle subtler subtlest subtract subtracted subtracting subtractings subtracts sufficiently suicide suicides super superior superiors supers supposedly surgeon surgeons surgical surgicals surplus surpluses susceptible susceptibles sustainable sustainables swap swapped swapping swappings swaps swell swelled swelling swells swollen sword sworded swording swordings swords syllabi syllable syllabled syllables syllabus syllabuses symbolic symbolics syndrome syndromes syntactic syntactics syntax syntheses synthesis synthetic synthetics systematic systematics tech technically techs temporal temporals tempt tempted tempting temptings tempts tense tensed tenses tensing tensings terminal terminals terminologies terminology terribly textbook textbooks theorem theorems theorist theorists thereby thermal thermals theses thesis thickness thicknesses thread threaded threading threadings threads threshold thresholds thumb thumbed thumbing thumbings thumbs tolerance tolerances ton tons toxic toxics tract tracts traditionally trait traits trajectories trajectory trans transaction transactions transcribe transcribed transcribes transcribing transcribings transcription transcriptions transformation transformations translation translations transmission transmissions transmit transmits transmitted transmitting transmittings transparencies transparency transplant transplanted transplanting transplantings transplants trauma traumas treaties treaty tremendous triangle triangles tribe tribes trickier trickiest tricky trivial trivials tropical tropicals tumor tumors tumour tumours turbulent tutor tutored tutoring tutorings tutors ultimate ultimates undergraduate undergraduates undermine undermined undermines undermining underminings underneath unemployed unified unifies unify unifying unifyings unintelligible unintelligibles unities unity unstable unstables uplift uplifted uplifting upliftings uplifts upward upwards urine usage usages utilise utilised utilises utilising utilisings utilities utility utilize utilized utilizes utilizing utterance utterances vague valid validities validity valve valved valves variabilities variability variance variances variant variants vector vectors vegetation vein veined veining veinings veins velocities velocity verbal verbals vertical verticals viable viables virtue virtues vitamin vitamins vocabularies vocabulary volition volitions vowel vowels watershed watersheds wavelength wavelengths weave weaved weaves weaving weavings wheat wheats whereby whichever whichevers whoever whoevers widespread widespreads wisdom wisdoms workshop workshops wove woven yeast yeasts',
+};
+
+const LEVEL_SETS = {};
+for(const lvl of ['A1','A2','B1','B2','C1']){
+  LEVEL_SETS[lvl] = new Set(LEVEL_WORDS[lvl].split(' '));
+}
+
+function guessLevel(word){
+  const w = word.trim().toLowerCase();
+  for(const lvl of ['A1','A2','B1','B2','C1']){
+    if(LEVEL_SETS[lvl].has(w)) return lvl;
+  }
+  return 'C2';
+}
+
+async function fetchWithTimeout(url, ms){
+  const controller = new AbortController();
+  const timeoutId = setTimeout(()=>controller.abort(), ms);
+  try{
+    return await fetch(url, {signal: controller.signal});
+  }catch(e){
+    if(e.name === 'AbortError') throw new Error('timeout');
+    throw new Error('network');
+  }finally{
+    clearTimeout(timeoutId);
+  }
+}
+
+async function fetchWordInfo(word){
+  const w = word.trim().toLowerCase();
+
+  const dictPromise = fetchWithTimeout(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(w)}`, 5000)
+    .then(async res => {
+      if(!res.ok) throw new Error('word-not-found');
+      return res.json();
+    });
+
+  const trPromise = fetchWithTimeout(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(w)}&langpair=en|ar`, 5000)
+    .then(res => res.json());
+
+  const [dictResult, trResult] = await Promise.allSettled([dictPromise, trPromise]);
+
+  let hint = '';
+  let example = '';
+  if(dictResult.status === 'fulfilled'){
+    for(const entry of dictResult.value){
+      for(const meaning of (entry.meanings || [])){
+        for(const def of (meaning.definitions || [])){
+          if(!hint && def.definition) hint = def.definition;
+          if(!example && def.example) example = def.example;
+        }
+      }
+    }
+  }
+
+  let meaning_ar = '';
+  if(trResult.status === 'fulfilled'){
+    const trData = trResult.value;
+    const text = (trData && trData.responseData && trData.responseData.translatedText) || '';
+    if(text && !/mymemory warning/i.test(text)){
+      meaning_ar = text;
+    }
+  }
+
+  if(!hint && !meaning_ar){
+    // both sources failed - nothing usable came back, let the caller offer manual entry
+    if(dictResult.status === 'rejected' && dictResult.reason && dictResult.reason.message === 'word-not-found'){
+      throw new Error('word-not-found');
+    }
+    throw new Error('network');
+  }
+
+  const level = guessLevel(w);
+  return { hint, meaning_ar, example, level };
+}
+
+function isLocked(){
+  return words.filter(w=>!w.reviewed).length >= REVIEW_THRESHOLD;
+}
+
+function updateLockState(){
+  const unreviewed = words.filter(w=>!w.reviewed).length;
+  const locked = unreviewed >= REVIEW_THRESHOLD;
+
+  document.getElementById('wordInput').disabled = locked;
+  document.getElementById('addBtn').disabled = locked;
+  document.getElementById('addBox').style.opacity = locked ? '.5' : '1';
+  document.getElementById('lockBanner').style.display = locked ? 'block' : 'none';
+
+  const pct = Math.min(100, (unreviewed / REVIEW_THRESHOLD) * 100);
+  const fill = document.getElementById('reviewFill');
+  fill.style.width = pct + '%';
+  fill.style.background = locked ? 'var(--danger)' : 'var(--gold)';
+
+  document.getElementById('reviewLabel').textContent = locked
+    ? `${unreviewed} / ${REVIEW_THRESHOLD} — لازم تراجع قبل ما تضيف كلمات جديدة`
+    : `${unreviewed} / ${REVIEW_THRESHOLD} قبل المراجعة الإجبارية`;
+
+  return locked;
+}
+
+async function addWord(){
+  if(isLocked()){
+    showMessage('لازم تراجع الكلمات الحالية أول 🔒', 'warn');
+    return;
+  }
+  const input = document.getElementById('wordInput');
+  const raw = input.value.trim();
+  if(!raw) return;
+
+  if(isDuplicate(raw)){
+    showMessage(`كلمة "${raw}" مضافة عندك من قبل ✋`, 'warn');
+    input.classList.add('shake');
+    setTimeout(()=>input.classList.remove('shake'), 350);
+    return;
+  }
+
+  setLoading(true);
+  showMessage('يدور المعنى...', '');
+  try{
+    const info = await fetchWordInfo(raw);
+    const level = LEVELS.includes(info.level) ? info.level : 'B1';
+    wordCounter++;
+    const volume = Math.floor((wordCounter-1)/VOLUME_SIZE) + 1;
+    words.unshift({
+      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      word: raw,
+      hint: info.hint || '(بدون تلميح — التعريف الإنجليزي ما توفر)',
+      meaning_ar: info.meaning_ar || 'ترجمة غير متوفرة',
+      example: info.example || '',
+      level: level,
+      volume: volume,
+      edited: false,
+      needsInfo: false,
+      reviewed: false,
+      correctCount: 0,
+      wrongCount: 0,
+      date: new Date().toISOString()
+    });
+    saveWords();
+    saveCounter();
+    currentVolume = volume;
+    input.value = '';
+    showMessage(`تمت إضافة "${raw}" ✅`, 'ok');
+    render();
+    checkMilestone();
+  }catch(e){
+    if(e.message === 'word-not-found'){
+      const box = document.getElementById('msgBox');
+      box.className = 'msg err';
+      box.innerHTML = `ما لكيت "${escapeHtml(raw)}" بالقاموس. <button id="manualFallbackBtn" class="inline-link">أدخلها يدوياً</button>`;
+      document.getElementById('manualFallbackBtn').addEventListener('click', ()=> openManualAdd(raw));
+    }else{
+      const box = document.getElementById('msgBox');
+      box.className = 'msg err';
+      box.innerHTML = `تعذر الاتصال بالإنترنت. <button id="manualFallbackBtn" class="inline-link">أدخل "${escapeHtml(raw)}" يدوياً</button>`;
+      document.getElementById('manualFallbackBtn').addEventListener('click', ()=> openManualAdd(raw));
+    }
+  }
+  setLoading(false);
+  input.focus();
+}
+
+function deleteWord(id){
+  words = words.filter(w => w.id !== id);
+  saveWords();
+  render();
+}
+
+function renderVolumeTabs(){
+  const container = document.getElementById('volumeTabs');
+  const maxVol = getMaxVolume();
+  let html = '';
+  for(let v=1; v<=maxVol; v++){
+    const count = words.filter(w=>w.volume===v).length;
+    const done = count >= VOLUME_SIZE;
+    html += `<button class="volume-tab ${v===currentVolume?'active':''}" data-vol="${v}">المجلد ${v}${done?' ✅':''} <small>(${count})</small></button>`;
+  }
+  container.innerHTML = html;
+  container.querySelectorAll('[data-vol]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      currentVolume = parseInt(btn.getAttribute('data-vol'), 10);
+      render();
+    });
+  });
+}
+
+function render(){
+  updateLockState();
+  document.getElementById('countPill').textContent = `${words.length} كلمة`;
+  renderVolumeTabs();
+
+  const maxVol = getMaxVolume();
+  if(currentVolume > maxVol) currentVolume = maxVol;
+  document.getElementById('volumeTitle').textContent = `📖 المجلد ${currentVolume}`;
+
+  const volumeWords = words.filter(w => w.volume === currentVolume);
+
+  document.getElementById('distLabel').textContent = `توزيع المستويات - المجلد ${currentVolume} (تقديري)`;
+  const distBar = document.getElementById('distBar');
+  const distLegend = document.getElementById('distLegend');
+  distBar.innerHTML = '';
+  distLegend.innerHTML = '';
+  const total = volumeWords.length || 1;
+  LEVELS.forEach(lv=>{
+    const n = volumeWords.filter(w=>w.level===lv).length;
+    if(n>0){
+      const seg = document.createElement('i');
+      seg.style.background = LEVEL_COLORS[lv];
+      seg.style.width = (n/total*100)+'%';
+      distBar.appendChild(seg);
+    }
+    const leg = document.createElement('span');
+    leg.innerHTML = `<b style="background:${LEVEL_COLORS[lv]}"></b>${lv} (${n})`;
+    distLegend.appendChild(leg);
+  });
+
+  const grid = document.getElementById('cardGrid');
+  if(words.length === 0){
+    grid.innerHTML = `<div class="empty-state">المفكرة فاضية... اكتب أول كلمة تتعلمها 👆</div>`;
+    return;
+  }
+
+  const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  const displayWords = query
+    ? volumeWords.filter(w => w.word.toLowerCase().includes(query))
+    : volumeWords;
+
+  if(displayWords.length === 0){
+    grid.innerHTML = `<div class="empty-state">${query ? 'ماكو نتائج لهذا البحث بهذا المجلد' : 'ماكو كلمات بهذا المجلد بعد'}</div>`;
+    return;
+  }
+
+  grid.innerHTML = displayWords.map(w=>`
+    <div class="card" data-id="${w.id}">
+      <div class="card-inner">
+        <div class="card-face card-front">
+          <div class="card-icons">
+            <button class="edit-icon" data-edit="${w.id}">✎</button>
+            <button class="del-icon" data-del="${w.id}">✕</button>
+          </div>
+          <span class="level-badge card-level-badge" style="background:${LEVEL_COLORS[w.level]}">${w.level}</span>
+          <div class="word-en">${escapeHtml(w.word)}</div>
+          <div class="hint-en">${escapeHtml(w.hint)}</div>
+          <div class="flip-hint">tap for meaning ↺</div>
+          ${w.needsInfo ? '<div class="edited-mark" style="color:var(--danger)">⚠ يحتاج تعديل</div>' : (w.edited ? '<div class="edited-mark">✎ معدّل</div>' : '')}
+        </div>
+        <div class="card-face card-back">
+          <div class="card-icons">
+            <button class="edit-icon" data-edit="${w.id}">✎</button>
+            <button class="del-icon" data-del="${w.id}">✕</button>
+          </div>
+          <div class="meaning-ar">${escapeHtml(w.meaning_ar)}</div>
+          <div class="example-en">${boldWord(w.example, w.word)}</div>
+          <div class="flip-hint" style="direction:rtl;text-align:right;margin-top:0;">اضغط للرجوع</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.card').forEach(cardEl=>{
+    cardEl.addEventListener('click', (e)=>{
+      if(e.target.closest('.card-icons')) return;
+      cardEl.classList.toggle('flipped');
+    });
+  });
+  grid.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      deleteWord(btn.getAttribute('data-del'));
+    });
+  });
+  grid.querySelectorAll('[data-edit]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      openEdit(btn.getAttribute('data-edit'));
+    });
+  });
+}
+
+/* ---- edit word / manual add ---- */
+function openEdit(id){
+  const w = words.find(x=>x.id===id);
+  if(!w) return;
+  editingId = id;
+  manualAddMode = false;
+  document.getElementById('editModeLabel').textContent = 'تعديل الكلمة:';
+  document.getElementById('editWordTitle').style.display = 'inline';
+  document.getElementById('editWordTitle').textContent = w.word;
+  document.getElementById('editWordField').style.display = 'none';
+  document.getElementById('editHint').value = w.hint || '';
+  document.getElementById('editMeaning').value = w.meaning_ar || '';
+  document.getElementById('editExample').value = w.example || '';
+  document.getElementById('editLevel').value = w.level || 'B1';
+  document.getElementById('editOverlay').style.display = 'flex';
+}
+
+function openManualAdd(prefillWord){
+  if(isLocked()){
+    showMessage('لازم تراجع الكلمات الحالية أول 🔒', 'warn');
+    return;
+  }
+  editingId = null;
+  manualAddMode = true;
+  document.getElementById('editModeLabel').textContent = 'إضافة يدوية:';
+  document.getElementById('editWordTitle').style.display = 'none';
+  document.getElementById('editWordField').style.display = 'block';
+  document.getElementById('editWordInput').value = prefillWord || '';
+  document.getElementById('editHint').value = '';
+  document.getElementById('editMeaning').value = '';
+  document.getElementById('editExample').value = '';
+  document.getElementById('editLevel').value = prefillWord ? guessLevel(prefillWord) : 'B1';
+  document.getElementById('editOverlay').style.display = 'flex';
+}
+
+function closeEdit(){
+  editingId = null;
+  manualAddMode = false;
+  document.getElementById('editOverlay').style.display = 'none';
+}
+
+function saveEdit(){
+  if(manualAddMode){
+    const word = document.getElementById('editWordInput').value.trim();
+    if(!word){
+      showMessage('لازم تكتب الكلمة', 'warn');
+      return;
+    }
+    if(isDuplicate(word)){
+      showMessage(`كلمة "${word}" مضافة عندك من قبل ✋`, 'warn');
+      return;
+    }
+    const meaning = document.getElementById('editMeaning').value.trim();
+    wordCounter++;
+    const volume = Math.floor((wordCounter-1)/VOLUME_SIZE) + 1;
+    words.unshift({
+      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      word: word,
+      hint: document.getElementById('editHint').value.trim(),
+      meaning_ar: meaning || 'ترجمة غير متوفرة',
+      example: document.getElementById('editExample').value.trim(),
+      level: document.getElementById('editLevel').value,
+      volume: volume,
+      edited: true,
+      needsInfo: !meaning,
+      reviewed: false,
+      correctCount: 0,
+      wrongCount: 0,
+      date: new Date().toISOString()
+    });
+    saveWords();
+    saveCounter();
+    currentVolume = volume;
+    document.getElementById('wordInput').value = '';
+    closeEdit();
+    render();
+    checkMilestone();
+    showMessage(`تمت إضافة "${word}" يدوياً ✅`, 'ok');
+    return;
+  }
+
+  const w = words.find(x=>x.id===editingId);
+  if(!w){ closeEdit(); return; }
+  const newHint = document.getElementById('editHint').value.trim();
+  const newMeaning = document.getElementById('editMeaning').value.trim();
+  const newExample = document.getElementById('editExample').value.trim();
+  w.hint = newHint || w.hint;
+  w.meaning_ar = newMeaning || w.meaning_ar;
+  w.example = newExample;
+  w.level = document.getElementById('editLevel').value;
+  w.edited = true;
+  w.needsInfo = false;
+  saveWords();
+  const savedWord = w.word;
+  closeEdit();
+  render();
+  showMessage(`تم تحديث "${savedWord}" ✅`, 'ok');
+}
+
+/* ---- milestones (every 100 / every 1000) ---- */
+function checkMilestone(){
+  if(wordCounter > 0 && wordCounter % 1000 === 0){
+    const volEnd = wordCounter / VOLUME_SIZE;
+    const volStart = volEnd - 9;
+    pendingMilestone = {
+      type: 'thousand',
+      title: `🎉 خلصت ${wordCounter} كلمة!`,
+      sub: `سو مراجعة شاملة للمجلدات ${volStart} - ${volEnd}`,
+      volStart, volEnd
+    };
+  }else if(wordCounter > 0 && wordCounter % VOLUME_SIZE === 0){
+    const vol = wordCounter / VOLUME_SIZE;
+    pendingMilestone = {
+      type: 'hundred',
+      title: `🎉 خلصت المجلد ${vol}!`,
+      sub: `سو مراجعة شاملة لكل كلمات هذا المجلد قبل ما تكمل`,
+      vol
+    };
+  }else{
+    return;
+  }
+  renderMilestone();
+}
+
+function renderMilestone(){
+  const el = document.getElementById('milestoneBanner');
+  if(!pendingMilestone){ el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  document.getElementById('milestoneTitle').textContent = pendingMilestone.title;
+  document.getElementById('milestoneSub').textContent = pendingMilestone.sub;
+}
+
+function dismissMilestone(){
+  pendingMilestone = null;
+  renderMilestone();
+}
+
+function startMilestoneReview(){
+  if(!pendingMilestone) return;
+  const pool = pendingMilestone.type === 'thousand'
+    ? words.filter(w => w.volume >= pendingMilestone.volStart && w.volume <= pendingMilestone.volEnd)
+    : words.filter(w => w.volume === pendingMilestone.vol);
+  dismissMilestone();
+  startQuiz(pool, 'milestone');
+}
+
+/* ---- quiz mode ---- */
+function startQuiz(pool, mode){
+  if(pool.length === 0){
+    const msgs = {
+      unreviewed: 'ماكو كلمات غير مراجعة حالياً',
+      all: 'لازم تضيف كلمات أول قبل المراجعة',
+      volume: 'ماكو كلمات بهذا المجلد بعد',
+      milestone: 'ماكو كلمات للمراجعة'
+    };
+    showMessage(msgs[mode] || 'ماكو كلمات للمراجعة', 'warn');
+    return;
+  }
+  const queue = [...pool].sort(()=>Math.random()-0.5).map(w=>w.id);
+  quizState = {pool, queue, index:0, correct:0, wrong:0, mode};
+  renderQuiz();
+}
+
+function currentQuizWord(){
+  const id = quizState.queue[quizState.index];
+  return words.find(w=>w.id===id);
+}
+
+function closeQuiz(){
+  quizState = null;
+  renderQuiz();
+  render();
+}
+
+function answerQuiz(correct, id){
+  const w = words.find(x=>x.id===id);
+  if(w){
+    w.correctCount = (w.correctCount||0) + (correct?1:0);
+    w.wrongCount = (w.wrongCount||0) + (correct?0:1);
+    w.reviewed = true;
+    w.lastReviewed = new Date().toISOString();
+  }
+  if(correct) quizState.correct++; else quizState.wrong++;
+  saveWords();
+  quizState.index++;
+  renderQuiz();
+  render();
+}
+
+function renderQuiz(){
+  const overlay = document.getElementById('quizOverlay');
+  if(!quizState){ overlay.style.display='none'; overlay.innerHTML=''; return; }
+  overlay.style.display='flex';
+
+  if(quizState.index >= quizState.queue.length){
+    const stillLocked = isLocked();
+    overlay.innerHTML = `
+      <div class="quiz-card">
+        <div class="quiz-summary-title">خلصت المراجعة 🎉</div>
+        <div class="quiz-summary-score">${quizState.correct} صح / ${quizState.wrong} غلط من ${quizState.queue.length}</div>
+        ${quizState.mode === 'unreviewed' && !stillLocked ? '<div style="color:var(--teal);font-size:.85rem;margin-bottom:16px;">تكدر تضيف كلمات جديدة الحين ✅</div>' : ''}
+        <div class="quiz-actions">
+          <button id="quizRestart">مراجعة ثانية</button>
+          <button id="quizClose">رجوع</button>
+        </div>
+      </div>`;
+    document.getElementById('quizRestart').onclick = ()=>startQuiz(quizState.pool, quizState.mode);
+    document.getElementById('quizClose').onclick = closeQuiz;
+    return;
+  }
+
+  const w = currentQuizWord();
+  overlay.innerHTML = `
+    <div class="quiz-top">
+      <span>${quizState.index+1} / ${quizState.queue.length}</span>
+      <button id="quizExit">✕</button>
+    </div>
+    <div class="quiz-card" id="quizCard">
+      <span class="level-badge" style="background:${LEVEL_COLORS[w.level]}">${w.level}</span>
+      <div class="word-en" style="font-size:1.4rem;margin-top:16px;">${escapeHtml(w.word)}</div>
+      <div class="hint-en" style="font-size:.85rem;margin-top:10px;-webkit-line-clamp:unset;">${escapeHtml(w.hint)}</div>
+      <div id="quizAnswer" style="display:none;margin-top:18px;">
+        <div class="meaning-ar" style="font-size:1.25rem;margin-top:0;">${escapeHtml(w.meaning_ar)}</div>
+        <div class="hint-en" style="margin-top:8px;-webkit-line-clamp:unset;">${boldWord(w.example, w.word)}</div>
+      </div>
+    </div>
+    <div class="quiz-actions" id="quizActions">
+      <button id="quizReveal">اظهر الجواب</button>
+    </div>
+  `;
+  document.getElementById('quizExit').onclick = closeQuiz;
+  document.getElementById('quizReveal').onclick = ()=>{
+    document.getElementById('quizAnswer').style.display='block';
+    document.getElementById('quizActions').innerHTML = `
+      <button id="quizWrong" class="quiz-wrong">❌ ما عرفتها</button>
+      <button id="quizCorrect" class="quiz-correct">✅ عرفتها</button>
+    `;
+    document.getElementById('quizWrong').onclick = ()=>answerQuiz(false, w.id);
+    document.getElementById('quizCorrect').onclick = ()=>answerQuiz(true, w.id);
+  };
+}
+
+document.getElementById('addBtn').addEventListener('click', addWord);
+document.getElementById('wordInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') addWord();
+});
+document.getElementById('lockReviewBtn').addEventListener('click', ()=>startQuiz(words.filter(w=>!w.reviewed), 'unreviewed'));
+document.getElementById('quizVolumeBtn').addEventListener('click', ()=>startQuiz(words.filter(w=>w.volume===currentVolume), 'volume'));
+document.getElementById('quizAllBtn').addEventListener('click', ()=>startQuiz(words, 'all'));
+document.getElementById('milestoneGoBtn').addEventListener('click', startMilestoneReview);
+document.getElementById('milestoneLaterBtn').addEventListener('click', dismissMilestone);
+document.getElementById('editCancel').addEventListener('click', closeEdit);
+document.getElementById('editSave').addEventListener('click', saveEdit);
+document.getElementById('manualAddBtn').addEventListener('click', ()=>{
+  const typed = document.getElementById('wordInput').value.trim();
+  openManualAdd(typed);
+});
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  if(confirm('متأكد تريد تحذف كل الكلمات المحفوظة؟')){
+    words = [];
+    wordCounter = 0;
+    currentVolume = 1;
+    pendingMilestone = null;
+    saveWords();
+    saveCounter();
+    render();
+    renderMilestone();
+    showMessage('تم حذف كل الكلمات', '');
+  }
+});
+document.getElementById('exportBtn').addEventListener('click', exportWords);
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  document.getElementById('importInput').click();
+});
+document.getElementById('importInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(file) importWords(file);
+  e.target.value = '';
+});
+
+loadWords();
+</script>
+</body>
+</html>
